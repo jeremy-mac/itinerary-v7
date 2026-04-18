@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 07 · Grand Teton to Yellowstone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Work+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+<style>
+  :root{
+    --paper:#FAF7F0;
+    --paper-warm:#F3EEE2;
+    --ink:#1C1916;
+    --ink-soft:#3D342B;
+    --ink-mute:#8A7E6E;
+    --rule:#CFC4AF;
+    --accent:#6B2B2B;
+    --highlight:#C19A5E;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-family:'EB Garamond', Georgia, serif;
+    font-size:17px;
+    line-height:1.78;
+    -webkit-font-smoothing:antialiased;
+    opacity:0;
+    transition:opacity 600ms ease;
+  }
+  body.loaded{opacity:1}
+
+  /* ——— Masthead ——— */
+  .masthead{
+    max-width:1060px;
+    margin:0 auto;
+    padding:48px 48px 24px;
+    text-align:center;
+    border-bottom:1px solid var(--rule);
+  }
+  .masthead .eyebrow{
+    font-family:'Work Sans', sans-serif;
+    font-weight:700;
+    font-size:10px;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  .masthead .issue{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    font-size:13px;
+    color:var(--ink-mute);
+    margin:0;
+  }
+
+  /* ——— Day wrap ——— */
+  .day{
+    max-width:1060px;
+    margin:0 auto;
+    padding:100px 48px 80px;
+  }
+
+  .day-number{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:300;
+    font-size:180px;
+    line-height:0.8;
+    color:var(--accent);
+    letter-spacing:-0.02em;
+  }
+
+  .date-line{
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:11px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin:28px 0 44px;
+  }
+
+  h1.route{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:42px;
+    line-height:1.18;
+    letter-spacing:-0.015em;
+    color:var(--ink);
+    margin:0 0 24px;
+  }
+  h1.route em{
+    font-style:italic;
+    color:var(--accent);
+    font-weight:400;
+  }
+
+  .route-path{
+    font-family:'Work Sans', sans-serif;
+    font-weight:500;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    padding-bottom:40px;
+    border-bottom:1px solid var(--rule);
+    margin-bottom:60px;
+  }
+  .route-path .sep{
+    color:var(--highlight);
+    margin:0 0.55em;
+    font-size:11px;
+    position:relative;
+    top:-1px;
+  }
+
+  /* ——— Narrative spread ——— */
+  .spread{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:48px;
+    align-items:start;
+    margin-bottom:72px;
+  }
+  .spread .label{
+    font-family:'Work Sans', sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--accent);
+    padding-top:12px;
+    border-top:2px solid var(--accent);
+  }
+  .spread .content{
+    max-width:640px;
+  }
+  .theme{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:26px;
+    line-height:1.3;
+    color:var(--ink);
+    margin:0 0 26px;
+    position:relative;
+    padding-top:22px;
+  }
+  .theme::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:32px;
+    height:1px;
+    background:var(--accent);
+  }
+  .spread p{
+    margin:0 0 1.1em;
+    color:var(--ink-soft);
+  }
+  .spread p:last-child{margin-bottom:0}
+  .lede::first-letter{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:58px;
+    line-height:0.9;
+    color:var(--accent);
+    float:left;
+    padding:6px 10px 0 0;
+  }
+
+  /* ——— Intro message + schedule ——— */
+  .intro{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    font-size:17px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:0 0 28px;
+    max-width:560px;
+  }
+  .schedule{
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .schedule .row{
+    display:grid;
+    grid-template-columns:78px 1fr;
+    gap:28px;
+    align-items:baseline;
+    padding:12px 0;
+    border-bottom:1px solid var(--rule);
+  }
+  .schedule .row:first-child{padding-top:0}
+  .schedule .row:last-child{border-bottom:none; padding-bottom:0}
+  .schedule dt{
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.14em;
+    color:var(--ink-mute);
+    margin:0;
+  }
+  .schedule dd{
+    margin:0;
+    font-family:'EB Garamond', serif;
+    font-size:16px;
+    line-height:1.5;
+    color:var(--ink-soft);
+  }
+  .schedule dd strong{
+    font-weight:500;
+    color:var(--ink);
+  }
+  .schedule dd .note{
+    color:var(--ink-mute);
+  }
+  .schedule dd em{
+    font-style:italic;
+    color:var(--ink-mute);
+  }
+
+  /* ——— Inline route link ——— */
+  .route-link{
+    display:inline-block;
+    margin-left:12px;
+    font-family:'Work Sans', sans-serif;
+    font-weight:500;
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    text-decoration:none;
+    white-space:nowrap;
+    border-bottom:1px solid transparent;
+    transition:color 200ms ease, border-color 200ms ease;
+  }
+  .route-link::before{
+    content:"✦";
+    color:var(--highlight);
+    margin-right:10px;
+    font-size:11px;
+    letter-spacing:0;
+  }
+  .route-link:hover{
+    color:var(--accent);
+    border-bottom-color:var(--accent);
+  }
+
+  /* ——— Day route map ——— */
+  .map-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:24px;
+    margin:0 0 14px;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:10px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+  }
+  .map-header .route-link{margin-left:0}
+  .day-map{
+    width:100%;
+    height:320px;
+    border:1px solid var(--rule);
+    background:var(--paper-warm);
+    margin-bottom:72px;
+  }
+  .leaflet-container{
+    font-family:'EB Garamond', serif;
+    background:var(--paper-warm);
+  }
+  .map-marker-wrap{background:transparent; border:none}
+  .map-marker{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:24px; height:24px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#FFF;
+    border:2px solid #FFF;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:11px;
+    line-height:1;
+    box-shadow:0 1px 3px rgba(28,25,22,0.25);
+  }
+  .leaflet-popup-content-wrapper{
+    border-radius:2px;
+    background:var(--paper);
+    box-shadow:0 2px 8px rgba(28,25,22,0.18);
+  }
+  .leaflet-popup-tip{background:var(--paper)}
+  .leaflet-popup-content{
+    margin:10px 14px;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:10px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink);
+    line-height:1.3;
+  }
+  .leaflet-popup-content .pop-time{
+    display:block;
+    margin-top:4px;
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:12px;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--ink-mute);
+  }
+  .leaflet-control-attribution{
+    font-family:'Work Sans', sans-serif;
+    font-size:9px;
+    letter-spacing:0.04em;
+    background:rgba(250,247,240,0.85) !important;
+    color:var(--ink-mute) !important;
+  }
+  .leaflet-control-attribution a{color:var(--ink-mute) !important}
+  .leaflet-control-zoom a{
+    background:var(--paper) !important;
+    color:var(--ink-soft) !important;
+    border-color:var(--rule) !important;
+    font-family:'EB Garamond', serif;
+  }
+
+  /* ——— Print ——— */
+  @media print{
+    body{opacity:1 !important; background:#FFF}
+    .day-map, .map-header{display:none}
+    .photos figure:hover img{transform:none}
+    .route-link{color:var(--ink-mute); border:none}
+    .spread{break-inside:avoid}
+  }
+
+  /* ——— Services (meals + stay) ——— */
+  .services{
+    margin:80px 0;
+    padding:48px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    flex-wrap:wrap;
+  }
+  .service{
+    text-align:center;
+    color:var(--ink-soft);
+    min-width:240px;
+  }
+  .service svg{
+    display:block;
+    margin:0 auto 18px;
+    color:var(--ink-soft);
+  }
+  .service .s-label{
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:10px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin-bottom:14px;
+  }
+  .service ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+    font-family:'EB Garamond', serif;
+    font-size:15px;
+    line-height:1.7;
+    color:var(--ink-soft);
+  }
+  .service ul li + li{margin-top:2px}
+  .service .stay-name{color:var(--ink); font-size:15px}
+  .service .stay-ref{
+    font-style:italic;
+    font-size:13px;
+    color:var(--ink-mute);
+    margin-top:4px;
+  }
+  .service em{font-style:italic; color:var(--ink-mute)}
+
+  /* ——— Photo strip ——— */
+  .photos{
+    margin-top:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  .photos figure{
+    margin:0;
+    overflow:hidden;
+  }
+  .photos .frame{
+    overflow:hidden;
+    aspect-ratio:3/2;
+    background:var(--paper-warm);
+  }
+  .photos img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform 600ms ease;
+  }
+  .photos figure:hover img{transform:scale(1.02)}
+  .photos figcaption{
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:10px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    padding-top:12px;
+  }
+
+  /* ——— Responsive ——— */
+  @media (max-width: 800px){
+    .masthead{padding:36px 24px 20px}
+    .day{padding:64px 24px 56px}
+    .day-number{font-size:120px}
+    .date-line{margin:20px 0 32px}
+    h1.route{font-size:32px}
+    .route-path{font-size:11px; letter-spacing:0.14em; padding-bottom:28px; margin-bottom:44px}
+    .route-path .sep{margin:0 0.4em}
+    .spread{grid-template-columns:1fr; gap:16px; margin-bottom:56px}
+    .spread .label{border-top:none; padding-top:0}
+    .theme{font-size:22px}
+    .services{flex-direction:column; align-items:center; gap:40px; padding:36px 0; margin:60px 0}
+    .photos{grid-template-columns:1fr; gap:18px}
+    .schedule .row{grid-template-columns:64px 1fr; gap:18px}
+    .schedule dd{font-size:15px}
+    .schedule .route-link{display:block; margin:6px 0 0 0}
+    .day-map{height:240px; margin-bottom:48px}
+    .map-header{flex-direction:column; align-items:flex-start; gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="eyebrow">TPE &nbsp;→&nbsp; SEATTLE 2026</p>
+  <p class="issue">A Sixteen-Day Journey · May 19 – June 3, 2026</p>
+</header>
+
+<article class="day">
+
+  <div class="day-number">07</div>
+  <div class="date-line">Monday · May 25, 2026</div>
+
+  <h1 class="route">Grand Teton <em>to</em> Yellowstone</h1>
+
+  <div class="route-path">
+    Jackson<span class="sep">✦</span>Mormon Row<span class="sep">✦</span>Schwabacher<span class="sep">✦</span>Snake River<span class="sep">✦</span>Dornan's<span class="sep">✦</span>Jenny Lake<span class="sep">✦</span>West Thumb<span class="sep">✦</span>Lake Hotel
+  </div>
+
+  <div class="map-header">
+    <span>Day Route · 8 Stops · ~210 km</span>
+    <a class="route-link"
+       href="https://www.google.com/maps/dir/?api=1&amp;origin=Jackson,WY&amp;destination=Lake+Yellowstone+Hotel,WY&amp;waypoints=T.A.+Moulton+Barn,Moose,WY|Schwabacher+Landing,Moose,WY|Snake+River+Overlook,WY|Dornans,Moose,WY|Jenny+Lake+Overlook,WY|West+Thumb+Geyser+Basin,WY&amp;travelmode=driving"
+       target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day7" class="day-map" role="img"
+       aria-label="Map of Day 7 route from Jackson to Lake Yellowstone Hotel via eight stops in Grand Teton and Yellowstone."></div>
+
+  <!-- ——— 1 · Before Dawn ——— -->
+  <section class="spread">
+    <div class="label">Before Dawn</div>
+    <div class="content">
+      <h2 class="theme">A start before the valley wakes</h2>
+      <p class="intro">Out of Jackson while the town is still quiet — four degrees outside, full layers, coffee in the thermos.</p>
+      <dl class="schedule">
+        <div class="row"><dt>06:30</dt><dd><strong>Wake</strong> — Jackson hotel; <span class="note">sunrise at 05:50 has already lit the Tetons' east face</span></dd></div>
+        <div class="row"><dt>07:30</dt><dd><strong>Check out</strong> — north on US-191</dd></div>
+        <div class="row"><dt>07:55</dt><dd><strong>Antelope Flats Road</strong> — 24 km north, right turn into the sagebrush plain<a class="route-link" href="https://www.google.com/maps/dir/Jackson,WY/T.A.+Moulton+Barn,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ——— 2 · Morning ——— -->
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">The A-list of Grand Teton, done before breakfast</h2>
+      <p class="intro">The signature Teton viewpoints in sequence — barn, reflections, overlook — with a long breakfast at the end to reward the early start.</p>
+      <dl class="schedule">
+        <div class="row"><dt>08:00</dt><dd><strong>T.A. Moulton Barn</strong> — 1912 Mormon homestead, first warm light on the Grand <span class="note">· 30 min</span></dd></div>
+        <div class="row"><dt>08:30</dt><dd><strong>Schwabacher Landing</strong> — Teton reflections on the Snake; moose-calving season, keep bear spray close <span class="note">· 30 min</span><a class="route-link" href="https://www.google.com/maps/dir/T.A.+Moulton+Barn,Moose,WY/Schwabacher+Landing,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:10</dt><dd><strong>Snake River Overlook</strong> — Ansel Adams' 1942 viewpoint <span class="note">· 15 min</span><a class="route-link" href="https://www.google.com/maps/dir/Schwabacher+Landing,Moose,WY/Snake+River+Overlook,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:45</dt><dd><strong>Breakfast at Dornan's</strong>, Moose — family-run since 1948, chuckwagon deck facing the range <span class="note">· 75 min</span><a class="route-link" href="https://www.google.com/maps/dir/Snake+River+Overlook,WY/Dornans,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>11:15</dt><dd><strong>Jenny Lake Overlook</strong> — east shore, Cathedral Group <span class="note">· 20 min (optional Taggart Lake hike, 3.3 mi, if weather holds)</span><a class="route-link" href="https://www.google.com/maps/dir/Dornans,Moose,WY/Jenny+Lake+Overlook,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ——— 3 · Afternoon ——— -->
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">North across the Parkway, into the geyser country</h2>
+      <p class="intro">A return stop at Dornan's for lunch, then the long drive north through the Rockefeller Parkway into Yellowstone.</p>
+      <dl class="schedule">
+        <div class="row"><dt>12:15</dt><dd><strong>Lunch at Dornan's</strong> — fill thermoses; no food services until Lake Hotel</dd></div>
+        <div class="row"><dt>13:00</dt><dd><strong>Drive north</strong> — ~100 km via the Rockefeller Parkway and Yellowstone's South Entrance <span class="note">· ~1h 40min</span><a class="route-link" href="https://www.google.com/maps/dir/Dornans,Moose,WY/West+Thumb+Geyser+Basin,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>14:45</dt><dd><strong>West Thumb Geyser Basin</strong> — lakeside hot springs, 30-min boardwalk <span class="note">· defer if the schedule has slipped</span></dd></div>
+        <div class="row"><dt>15:30</dt><dd><strong>Lake Yellowstone Hotel</strong> — 1891 Colonial Revival on the north shore; rocking chairs on the Sun Room porch</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ——— 4 · Evening ——— -->
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">An 1891 room, a lake-view window</h2>
+      <p class="intro">Dinner in the hotel's original dining room — bison, lake trout, regional pours, west-side window requested.</p>
+      <dl class="schedule">
+        <div class="row"><dt>19:00</dt><dd><strong>Dinner · Lake Hotel Dining Room</strong> — original 1891 space <em>(reservation pending — 60-day window opened ~Mar 26; call +1 307-344-7311)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ——— Services ——— -->
+  <div class="services">
+
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"
+           fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- plate -->
+        <circle cx="11" cy="20" r="7"/>
+        <!-- fork tines -->
+        <path d="M8 5 V11 M10 5 V11 M12 5 V11"/>
+        <path d="M10 11 V15"/>
+        <!-- wine glass -->
+        <path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/>
+        <path d="M23 12 V20"/>
+        <path d="M20 20 H26"/>
+      </svg>
+      <div class="s-label">Dining</div>
+      <ul>
+        <li>Breakfast · In-room or hotel</li>
+        <li>Lunch · Dornan's, Moose WY</li>
+        <li>Dinner · Lake Hotel Dining Room <em>(reservation pending)</em></li>
+      </ul>
+    </div>
+
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"
+           fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <!-- headboard -->
+        <path d="M5 20 V13 H16 V18"/>
+        <!-- pillow -->
+        <path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/>
+        <!-- mattress + base -->
+        <path d="M4 18 H28 V22 H4 Z"/>
+        <path d="M5 22 V25 M27 22 V25"/>
+        <!-- bedside lamp -->
+        <path d="M22 18 V13"/>
+        <path d="M20 13 H24 L23 9 H21 Z"/>
+      </svg>
+      <div class="s-label">Overnight</div>
+      <ul>
+        <li class="stay-name">Lake Yellowstone Hotel &amp; Cabins</li>
+        <li class="stay-ref">Xanterra · #20386832</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ——— Photo strip ——— -->
+  <div class="photos">
+    <figure>
+      <div class="frame">
+        <img loading="lazy" alt="The T.A. Moulton Barn on Mormon Row, Grand Teton National Park, with the Teton range rising behind it in morning light."
+             src="https://lh3.googleusercontent.com/place-photos/AJRVUZON0L6XfYWtM8sEOvGhw9RXsYaXkj9In_k0urCIXm-2UTH8tRgEFjSV-xKo4jQmbtFUo8DbDNWxOJpcX2TWYt-ilWhYQTwbTMuxqwUF1bsCMegfXVE8zH4_9d2qxBLztw25L5fDZcRHri8Rc7I=s4800-w800-h600">
+      </div>
+      <figcaption>T.A. Moulton Barn · Mormon Row</figcaption>
+    </figure>
+    <figure>
+      <div class="frame">
+        <img loading="lazy" alt="Schwabacher Landing on the Snake River with the Teton range reflected on still beaver-pond water."
+             src="https://lh3.googleusercontent.com/place-photos/AJRVUZPkAN4P4k3N1ueUG8gquJ24ReelJTNXSH6OuXsxvjAsCGlVAKwwxy2M8IZXqHVtUbRiX-eTQb50XBW8kINg4zBq6zHrm1D4RRNamaexuUel2xQ2uqkUfUX1A7slFJLezJSuoMraQm3JjZiOaQ=s4800-w800-h600">
+      </div>
+      <figcaption>Schwabacher Landing · Snake River</figcaption>
+    </figure>
+  </div>
+
+</article>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script>
+  requestAnimationFrame(function(){ document.body.classList.add('loaded'); });
+
+  function initDayMap(containerId, stops){
+    var el = document.getElementById(containerId);
+    if(!el || typeof L === 'undefined') return;
+    var map = L.map(el, { scrollWheelZoom:false, zoomControl:true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains:'abcd',
+      maxZoom:19,
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+    var latlngs = [];
+    stops.forEach(function(s){
+      var icon = L.divIcon({
+        className:'map-marker-wrap',
+        html:'<div class="map-marker">'+s.num+'</div>',
+        iconSize:[24,24],
+        iconAnchor:[12,12]
+      });
+      L.marker([s.lat, s.lng], { icon:icon })
+        .addTo(map)
+        .bindPopup(s.name+'<span class="pop-time">'+s.time+'</span>');
+      latlngs.push([s.lat, s.lng]);
+    });
+    L.polyline(latlngs, {
+      color:'#6B2B2B',
+      opacity:0.65,
+      weight:2,
+      dashArray:'4, 6'
+    }).addTo(map);
+    map.fitBounds(L.latLngBounds(latlngs), { padding:[30,30] });
+  }
+
+  initDayMap('route-map-day7', [
+    { num:1, name:'Jackson',                  time:'07:30', lat:43.4799, lng:-110.7624 },
+    { num:2, name:'T.A. Moulton Barn',        time:'08:00', lat:43.6607, lng:-110.6650 },
+    { num:3, name:'Schwabacher Landing',      time:'08:30', lat:43.7116, lng:-110.6704 },
+    { num:4, name:'Snake River Overlook',     time:'09:10', lat:43.7530, lng:-110.6244 },
+    { num:5, name:"Dornan's",                 time:'09:45', lat:43.6569, lng:-110.7113 },
+    { num:6, name:'Jenny Lake Overlook',      time:'11:15', lat:43.7678, lng:-110.7175 },
+    { num:7, name:'West Thumb Geyser Basin',  time:'14:45', lat:44.4155, lng:-110.5730 },
+    { num:8, name:'Lake Yellowstone Hotel',   time:'15:30', lat:44.5515, lng:-110.4017 }
+  ]);
+</script>
+
+</body>
+</html>
