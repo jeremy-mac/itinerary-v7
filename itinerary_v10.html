@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itinerary No. X · Taipei to Seattle · May–June 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Work+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+<style>
+  :root{
+    --paper:#FAF7F0; --paper-warm:#F3EEE2;
+    --ink:#1C1916; --ink-soft:#3D342B; --ink-mute:#8A7E6E;
+    --rule:#CFC4AF; --accent:#6B2B2B; --highlight:#C19A5E;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper); color:var(--ink-soft); font-family:'EB Garamond',Georgia,serif; font-size:17px; line-height:1.78; -webkit-font-smoothing:antialiased; opacity:0; transition:opacity 600ms ease}
+  body.loaded{opacity:1}
+
+  .masthead{max-width:1060px; margin:0 auto; padding:48px 48px 24px; text-align:center; border-bottom:1px solid var(--rule)}
+  .masthead .eyebrow{font-family:'Work Sans',sans-serif; font-weight:700; font-size:10px; letter-spacing:0.32em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+  .masthead .issue{font-family:'EB Garamond',serif; font-style:italic; font-size:13px; color:var(--ink-mute); margin:0}
+
+  /* Cover */
+  .cover{min-height:calc(100vh - 120px); max-width:1060px; margin:0 auto; padding:80px 48px 100px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; border-bottom:1px solid var(--rule)}
+  .cover .cover-eyebrow{font-family:'Work Sans',sans-serif; font-weight:700; font-size:10px; letter-spacing:0.36em; text-transform:uppercase; color:var(--accent); margin:0 0 56px}
+  .cover h1{font-family:'Cormorant Garamond',serif; font-weight:400; font-style:italic; font-size:68px; line-height:1.18; letter-spacing:-0.015em; color:var(--ink); margin:0 0 48px; max-width:820px}
+  .cover h1 em{font-style:normal; color:var(--accent); font-weight:300; display:block; font-size:36px; margin:8px 0; letter-spacing:0.06em}
+  .cover .sub{font-family:'EB Garamond',serif; font-style:italic; font-size:17px; color:var(--ink-mute); margin:0 0 72px}
+  .cover .ornament{display:flex; align-items:center; gap:20px; color:var(--highlight); margin-bottom:96px; font-size:14px}
+  .cover .ornament::before,.cover .ornament::after{content:""; width:88px; height:1px; background:var(--highlight); display:block}
+  .cover .guest{font-family:'Work Sans',sans-serif; font-weight:600; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--ink); margin:0 0 12px}
+  .cover .loyalty{font-family:'EB Garamond',serif; font-style:italic; font-size:13px; color:var(--ink-mute); margin:0; line-height:1.7}
+
+  /* Day */
+  .day{max-width:1060px; margin:0 auto; padding:100px 48px 80px}
+  .day-number{font-family:'Cormorant Garamond',serif; font-weight:300; font-size:180px; line-height:0.8; color:var(--accent); letter-spacing:-0.02em}
+  .date-line{font-family:'Work Sans',sans-serif; font-weight:600; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--ink-mute); margin:28px 0 44px}
+  h1.route{font-family:'Cormorant Garamond',serif; font-weight:500; font-size:42px; line-height:1.18; letter-spacing:-0.015em; color:var(--ink); margin:0 0 24px}
+  h1.route em{font-style:italic; color:var(--accent); font-weight:400}
+  .route-path{font-family:'Work Sans',sans-serif; font-weight:500; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); padding-bottom:40px; border-bottom:1px solid var(--rule); margin-bottom:60px}
+  .route-path .sep{color:var(--highlight); margin:0 0.55em; font-size:11px; position:relative; top:-1px}
+
+  .spread{display:grid; grid-template-columns:140px 1fr; gap:48px; align-items:start; margin-bottom:72px}
+  .spread .label{font-family:'Work Sans',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); padding-top:12px; border-top:2px solid var(--accent)}
+  .spread .content{max-width:640px}
+  .theme{font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:500; font-size:26px; line-height:1.3; color:var(--ink); margin:0 0 26px; position:relative; padding-top:22px}
+  .theme::before{content:""; position:absolute; top:0; left:0; width:32px; height:1px; background:var(--accent)}
+  .spread p{margin:0 0 1.1em; color:var(--ink-soft)}
+  .spread p:last-child{margin-bottom:0}
+
+  .intro{font-family:'EB Garamond',serif; font-style:italic; font-size:17px; line-height:1.55; color:var(--ink-soft); margin:0 0 26px; max-width:560px}
+  .schedule{margin:0; padding:0; display:flex; flex-direction:column}
+  .schedule .row{display:grid; grid-template-columns:78px 1fr; gap:28px; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--rule)}
+  .schedule .row:first-child{padding-top:0}
+  .schedule .row:last-child{border-bottom:none; padding-bottom:0}
+  .schedule dt{font-family:'Work Sans',sans-serif; font-weight:600; font-size:12px; letter-spacing:0.14em; color:var(--ink-mute); margin:0}
+  .schedule dd{margin:0; font-family:'EB Garamond',serif; font-size:16px; line-height:1.5; color:var(--ink-soft)}
+  .schedule dd strong{font-weight:500; color:var(--ink)}
+  .schedule dd .note{color:var(--ink-mute)}
+  .schedule dd em{font-style:italic; color:var(--ink-mute)}
+
+  .route-link{display:inline-block; margin-left:12px; font-family:'Work Sans',sans-serif; font-weight:500; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); text-decoration:none; white-space:nowrap; border-bottom:1px solid transparent; transition:color 200ms ease, border-color 200ms ease}
+  .route-link::before{content:"✦"; color:var(--highlight); margin-right:10px; font-size:11px; letter-spacing:0}
+  .route-link:hover{color:var(--accent); border-bottom-color:var(--accent)}
+
+  .map-header{display:flex; justify-content:space-between; align-items:baseline; gap:24px; margin:0 0 14px; font-family:'Work Sans',sans-serif; font-weight:600; font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--ink-mute)}
+  .map-header .route-link{margin-left:0}
+  .day-map{width:100%; height:320px; border:1px solid var(--rule); background:var(--paper-warm); margin-bottom:72px}
+  .leaflet-container{font-family:'EB Garamond',serif; background:var(--paper-warm)}
+  .map-marker-wrap{background:transparent; border:none}
+  .map-marker{display:flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:var(--accent); color:#FFF; border:2px solid #FFF; font-family:'Work Sans',sans-serif; font-weight:600; font-size:11px; line-height:1; box-shadow:0 1px 3px rgba(28,25,22,0.25)}
+  .leaflet-popup-content-wrapper{border-radius:2px; background:var(--paper); box-shadow:0 2px 8px rgba(28,25,22,0.18)}
+  .leaflet-popup-tip{background:var(--paper)}
+  .leaflet-popup-content{margin:10px 14px; font-family:'Work Sans',sans-serif; font-weight:600; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink); line-height:1.3}
+  .leaflet-popup-content .pop-time{display:block; margin-top:4px; font-family:'EB Garamond',serif; font-style:italic; font-weight:400; font-size:12px; letter-spacing:0; text-transform:none; color:var(--ink-mute)}
+  .leaflet-control-attribution{font-family:'Work Sans',sans-serif; font-size:9px; letter-spacing:0.04em; background:rgba(250,247,240,0.85) !important; color:var(--ink-mute) !important}
+  .leaflet-control-attribution a{color:var(--ink-mute) !important}
+  .leaflet-control-zoom a{background:var(--paper) !important; color:var(--ink-soft) !important; border-color:var(--rule) !important; font-family:'EB Garamond',serif}
+
+  .services{margin:80px 0; padding:48px 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); display:flex; justify-content:center; gap:60px; flex-wrap:wrap}
+  .service{text-align:center; color:var(--ink-soft); min-width:240px}
+  .service svg{display:block; margin:0 auto 18px; color:var(--ink-soft)}
+  .service .s-label{font-family:'Work Sans',sans-serif; font-weight:600; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-mute); margin-bottom:14px}
+  .service ul{list-style:none; margin:0; padding:0; font-family:'EB Garamond',serif; font-size:15px; line-height:1.7; color:var(--ink-soft)}
+  .service ul li + li{margin-top:2px}
+  .service .stay-name{color:var(--ink); font-size:15px}
+  .service .stay-ref{font-style:italic; font-size:13px; color:var(--ink-mute); margin-top:4px}
+  .service em{font-style:italic; color:var(--ink-mute)}
+
+  .photos{margin-top:0; display:grid; grid-template-columns:1fr 1fr; gap:24px}
+  .photos.single{grid-template-columns:1fr; max-width:640px; margin-left:auto; margin-right:auto}
+  .photos figure{margin:0; overflow:hidden}
+  .photos .frame{overflow:hidden; aspect-ratio:3/2; background:var(--paper-warm)}
+  .photos img{display:block; width:100%; height:100%; object-fit:cover; transition:transform 600ms ease}
+  .photos figure:hover img{transform:scale(1.02)}
+  .photos figcaption{font-family:'Work Sans',sans-serif; font-weight:600; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); padding-top:12px}
+
+  .day-rule{max-width:1060px; margin:0 auto; border:0; border-top:1px solid var(--rule); opacity:0.85}
+
+  /* Appendix */
+  .appendix{max-width:1060px; margin:0 auto; padding:120px 48px 80px; border-top:1px solid var(--rule)}
+  .appendix-eyebrow{font-family:'Work Sans',sans-serif; font-weight:700; font-size:10px; letter-spacing:0.32em; text-transform:uppercase; color:var(--accent); text-align:center; margin:0 0 16px}
+  .appendix-title{font-family:'Cormorant Garamond',serif; font-weight:500; font-style:italic; font-size:42px; color:var(--ink); text-align:center; margin:0 0 80px}
+  .practical{display:grid; grid-template-columns:140px 1fr; gap:48px; align-items:start; margin-bottom:72px}
+  .practical .label{font-family:'Work Sans',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--accent); padding-top:12px; border-top:2px solid var(--accent)}
+  .practical .content{max-width:720px}
+  .practical .theme{font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:500; font-size:26px; line-height:1.3; color:var(--ink); margin:0 0 20px; position:relative; padding-top:22px}
+  .practical .theme::before{content:""; position:absolute; top:0; left:0; width:32px; height:1px; background:var(--accent)}
+  .practical p{margin:0 0 1em; color:var(--ink-soft)}
+  .practical ul.compact{list-style:none; padding:0; margin:20px 0 0}
+  .practical ul.compact li{padding:12px 0; border-bottom:1px solid var(--rule); font-family:'EB Garamond',serif; font-size:15px; color:var(--ink-soft); display:grid; grid-template-columns:1fr auto; gap:18px; align-items:baseline}
+  .practical ul.compact li:last-child{border-bottom:none}
+  .practical ul.compact .meta{font-family:'Work Sans',sans-serif; font-weight:600; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); white-space:nowrap}
+  .practical ul.compact strong{font-weight:500; color:var(--ink)}
+  .practical ul.compact em{font-style:italic; color:var(--ink-mute)}
+
+  .colophon{max-width:1060px; margin:0 auto; padding:56px 48px 96px; text-align:center; border-top:1px solid var(--rule); font-family:'EB Garamond',serif; font-style:italic; font-size:13px; color:var(--ink-mute)}
+
+  @media (max-width: 800px){
+    .masthead{padding:36px 24px 20px}
+    .cover{padding:56px 24px 72px; min-height:auto}
+    .cover h1{font-size:40px; margin-bottom:32px}
+    .cover h1 em{font-size:22px}
+    .cover .sub{font-size:15px; margin-bottom:48px}
+    .cover .ornament{margin-bottom:64px}
+    .cover .ornament::before,.cover .ornament::after{width:48px}
+    .day{padding:64px 24px 56px}
+    .day-number{font-size:120px}
+    .date-line{margin:20px 0 32px}
+    h1.route{font-size:32px}
+    .route-path{font-size:11px; letter-spacing:0.14em; padding-bottom:28px; margin-bottom:44px}
+    .route-path .sep{margin:0 0.4em}
+    .spread{grid-template-columns:1fr; gap:16px; margin-bottom:56px}
+    .spread .label{border-top:none; padding-top:0}
+    .theme{font-size:22px}
+    .services{flex-direction:column; align-items:center; gap:40px; padding:36px 0; margin:60px 0}
+    .photos{grid-template-columns:1fr; gap:18px}
+    .schedule .row{grid-template-columns:64px 1fr; gap:18px}
+    .schedule dd{font-size:15px}
+    .schedule .route-link{display:block; margin:6px 0 0 0}
+    .day-map{height:240px; margin-bottom:48px}
+    .map-header{flex-direction:column; align-items:flex-start; gap:6px}
+    .appendix{padding:72px 24px 56px}
+    .appendix-title{font-size:32px; margin-bottom:56px}
+    .practical{grid-template-columns:1fr; gap:16px; margin-bottom:56px}
+    .practical .label{border-top:none; padding-top:0}
+    .practical ul.compact li{grid-template-columns:1fr; gap:4px}
+    .practical ul.compact .meta{justify-self:start}
+  }
+
+  @media print{
+    body{opacity:1 !important; background:#FFF}
+    .day-map,.map-header{display:none}
+    .photos figure:hover img{transform:none}
+    .route-link{color:var(--ink-mute); border:none}
+    .spread,.practical{break-inside:avoid}
+    .day{break-after:page}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="eyebrow">TPE &nbsp;→&nbsp; SEATTLE 2026</p>
+  <p class="issue">A Sixteen-Day Journey · May 19 – June 3, 2026</p>
+</header>
+
+<section class="cover">
+  <p class="cover-eyebrow">Travel Itinerary · No. X</p>
+  <h1>Taipei · to · Seattle<em>by way of</em>Grand Teton &amp; Yellowstone</h1>
+  <p class="sub">A sixteen-day journey · May 19 through June 3, 2026</p>
+  <div class="ornament">✦</div>
+  <p class="guest">[GUEST_NAME] &nbsp;&middot;&nbsp; 3 travellers</p>
+  <p class="loyalty">
+    China Airlines Dynasty · Alaska Mileage Plan<br>
+    Marriott Bonvoy · Xanterra Reservations
+  </p>
+</section>
+
+<main>
+<article class="day" id="day-1">
+  <div class="day-number">01</div>
+  <div class="date-line">Tuesday · May 19, 2026</div>
+  <h1 class="route">Taipei <em>to</em> San Francisco</h1>
+  <div class="route-path">TPE<span class="sep">✦</span>SFO</div>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Westbound, through a dateline</h2>
+      <p class="intro">A late wheels-up from Taoyuan for the long Pacific crossing &mdash; the calendar pauses in mid-flight, and San Francisco arrives the same date we left.</p>
+      <dl class="schedule">
+        <div class="row"><dt>23:30</dt><dd><strong>CI004 depart TPE</strong> &mdash; China Airlines, 777-300ER, business class <em>(booked)</em></dd></div>
+        <div class="row"><dt>19:55</dt><dd><strong>Arrive SFO</strong> &mdash; Tue May 19, Terminal I <span class="note">(dateline returns the day; intl arrivals + AirTrain adds ~2 hrs buffer to the rental pickup)</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Late</div>
+    <div class="content">
+      <h2 class="theme">SFO &rarr; SoMa</h2>
+      <p class="intro">Rental car at the SFO consolidated centre, a 25-minute drive up I-280 into SoMa, check in at The Clancy just before 23:00.</p>
+      <dl class="schedule">
+        <div class="row"><dt>22:00</dt><dd><strong>SF rental car pickup</strong> &mdash; Trip.com [SF_CAR_REF], BMW X5 or similar, 780 N McDonnell Rd <em>(2-hour buffer from landing absorbs intl arrival + AirTrain to the rental centre)</em><a class="route-link" href="https://maps.google.com/?q=780+N+McDonnell+Rd+SFO" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>22:30</dt><dd><strong>Check in &mdash; The Clancy, Autograph Collection</strong> &mdash; 299 2nd St, SoMa, Skyline View 2 Queen; ~22 km via I-280 &rarr; King St &rarr; 2nd St<a class="route-link" href="https://maps.google.com/?q=299+2nd+St+San+Francisco" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Dinner · Onboard CI004</li><li>Breakfast · Onboard CI004</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Clancy, Autograph Collection</li><li class="stay-ref">Skyline View 2 Queen &middot; Night 1 of 5</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-2">
+  <div class="day-number">02</div>
+  <div class="date-line">Wednesday · May 20, 2026</div>
+  <h1 class="route">A <em>quiet</em> day, a <em>celebration</em> evening</h1>
+  <div class="route-path">SoMa<span class="sep">&#10022;</span>at leisure<span class="sep">&#10022;</span>Acquerello</div>
+
+  <section class="spread">
+    <div class="label">Daytime</div>
+    <div class="content">
+      <h2 class="theme">No plan is the plan</h2>
+      <p class="intro">The BMW X5 sits in the Clancy garage if the group wants a Bay Area day trip &mdash; Muir Woods, Half Moon Bay, Sausalito &mdash; otherwise walk the neighbourhood, eat early, reset the body clock. The evening is the anchor.</p>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Acquerello &mdash; the celebration dinner</h2>
+      <p class="intro">Two Michelin stars in Pacific Heights, contemporary Italian, jackets suggested. A 26th-anniversary and Berkeley-graduation dinner at one table.</p>
+      <dl class="schedule">
+        <div class="row"><dt>17:30</dt><dd><strong>Depart Clancy &rarr; Acquerello</strong> &mdash; ~3 km / ~10 min via Bush St; Pacific Heights<a class="route-link" href="https://maps.google.com/?q=Acquerello+San+Francisco" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>18:00</dt><dd><strong>Dinner &middot; Acquerello</strong> &mdash; 2 Michelin stars; Seasonal Tasting Menu &times; 4 <span class="note">(reservation confirmed [ACQUERELLO_TOCK]; party of 4)</span> <span class="note">&middot; ~3 hrs; jackets suggested</span></dd></div>
+        <div class="row"><dt>21:30</dt><dd><strong>Return to Clancy</strong> &mdash; ~10 min</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Day at leisure</li><li>Dinner &middot; Acquerello <em>(confirmed, 6:00 pm, 4 pax)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Clancy, Autograph Collection</li><li class="stay-ref">Night 2 of 5</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-3">
+  <div class="day-number">03</div>
+  <div class="date-line">Thursday · May 21, 2026</div>
+  <h1 class="route">A <em>commencement</em> at Berkeley</h1>
+  <div class="route-path">San Francisco<span class="sep">✦</span>Berkeley<span class="sep">✦</span>San Francisco</div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Across the Bay</h2>
+      <p class="intro">Out of SoMa and over the Bay Bridge into Berkeley's oak-lined streets &mdash; a short drive for a ceremonial day.</p>
+      <dl class="schedule">
+        <div class="row"><dt>09:30</dt><dd><strong>Breakfast</strong> &mdash; The Clancy or a cafe in SoMa</dd></div>
+        <div class="row"><dt>10:00</dt><dd><strong>Drive SF &rarr; Berkeley</strong> &mdash; 18 km / ~30 min across the Bay Bridge from SoMa<a class="route-link" href="https://maps.google.com/?q=The+Clancy+299+2nd+St+San+Francisco+to+UC+Berkeley" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">The PDP reception</h2>
+      <p class="intro">The Professional Development Program opens the day with a 35-guest reception &mdash; family, faculty, fellow graduates.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:00</dt><dd><strong>PDP Commencement Reception</strong> &mdash; UC Berkeley, Professional Development Program</dd></div>
+        <div class="row"><dt>13:00</dt><dd><strong>Lunch</strong> &mdash; Telegraph Ave / Bancroft Way, near campus <em>(TBC)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">The Greek Theatre</h2>
+      <p class="intro">The College of Chemistry ceremony is held in the 1903 open-air amphitheatre at the top of campus &mdash; stone seating, cypress trees, the Berkeley hills rising behind.</p>
+      <dl class="schedule">
+        <div class="row"><dt>14:00</dt><dd><strong>CoC Commencement</strong> &mdash; College of Chemistry, The Greek Theatre</dd></div>
+        <div class="row"><dt>17:00</dt><dd><strong>Ceremony closes</strong> &mdash; photographs on the lawn</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Stay in Berkeley for dinner</h2>
+      <p class="intro">Skip the rush-hour double-cross of the Bay Bridge. Drive ten minutes from the Greek Theatre to La Marcha on San Pablo &mdash; Spanish tapas and paella &mdash; and head back to SoMa later, when the bridge has quieted.</p>
+      <dl class="schedule">
+        <div class="row"><dt>17:00</dt><dd><strong>Ceremony closes</strong> &mdash; photographs on the lawn</dd></div>
+        <div class="row"><dt>17:30</dt><dd><strong>Drive Greek Theatre &rarr; La Marcha</strong> &mdash; ~3 km / ~10 min<a class="route-link" href="https://maps.google.com/?q=La+Marcha+Tapas+Bar+Berkeley" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>18:30</dt><dd><strong>Dinner &middot; La Marcha Tapas Bar</strong> &mdash; Berkeley; Spanish tapas + paella; Michelin-recognised <em>(reservation TBC, 4 pax)</em></dd></div>
+        <div class="row"><dt>20:30</dt><dd><strong>Drive Berkeley &rarr; Clancy</strong> &mdash; ~18 km / ~30 min; Bay Bridge eastbound traffic eased by then<a class="route-link" href="https://maps.google.com/?q=Berkeley+to+299+2nd+St+San+Francisco" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Hotel</li><li>Lunch · Near campus <em>(TBC)</em></li><li>Dinner · La Marcha Tapas Bar, Berkeley <em>(reservation TBC)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Clancy, Autograph Collection</li><li class="stay-ref">Night 3 of 5 &middot; 3 pax from tonight</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-4">
+  <div class="day-number">04</div>
+  <div class="date-line">Friday · May 22, 2026</div>
+  <h1 class="route">North to <em>Napa</em></h1>
+  <div class="route-path">SoMa<span class="sep">&#10022;</span>St. Helena<span class="sep">&#10022;</span>Joseph Phelps<span class="sep">&#10022;</span>SoMa</div>
+
+  <div class="map-header">
+    <span>Day Route &middot; SF &rarr; Napa &rarr; SF &middot; ~220 km RT</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/San+Francisco/St+Helena+CA/San+Francisco" target="_blank" rel="noopener">&rarr; View full route</a>
+  </div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">SF &rarr; St. Helena</h2>
+      <p class="intro">North across the Bay Bridge or the Golden Gate, then up Hwy 29 through Yountville and Oakville &mdash; vineyards stitched together along the valley floor.</p>
+      <dl class="schedule">
+        <div class="row"><dt>09:30</dt><dd><strong>Drive SF &rarr; Napa</strong> &mdash; ~110 km / ~1h 30min via Bay Bridge &rarr; Hwy 29 (or Golden Gate &rarr; Hwy 121)<a class="route-link" href="https://maps.google.com/?q=San+Francisco+to+St+Helena+CA" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>11:20</dt><dd><strong>Arrive, check in 10 min early</strong> &mdash; St. Helena, Napa Valley</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">Joseph Phelps &mdash; Founder's Tasting</h2>
+      <p class="intro">Confirmed for a party of 4: two tasters, two non-tasters, plus the Ovation &amp; Caviar add-on. Ninety minutes on the property, with the cancellation window closing 72 hours out.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:30</dt><dd><strong>Joseph Phelps Vineyards &middot; Founder's Tasting</strong> &mdash; party of 4; 2 tasters + 2 non-tasters + Ovation &amp; Caviar add-on <span class="note">(reservation confirmed [PHELPS_TOCK]; 72-hr cancellation notice)</span> <span class="note">&middot; ~90 min</span></dd></div>
+        <div class="row"><dt>13:30</dt><dd><strong>Lunch in St. Helena</strong> &mdash; Cook St. Helena <em>or</em> Farmstead at Long Meadow Ranch (~10 min from Phelps) <em>(decision pending; book before May 19)</em></dd></div>
+        <div class="row"><dt>14:30</dt><dd><strong>Optional: 2nd winery / Yountville stroll / Oakville Grocery</strong> &mdash; light pace given Acquerello + Berkeley back-to-back</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Back to SoMa</h2>
+      <p class="intro">South again, with a head start before the evening commute thickens.</p>
+      <dl class="schedule">
+        <div class="row"><dt>16:30</dt><dd><strong>Drive Napa &rarr; SF</strong> &mdash; ~110 km / ~1h 45min with afternoon traffic<a class="route-link" href="https://maps.google.com/?q=St+Helena+CA+to+San+Francisco" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>Evening</dt><dd><strong>At discretion in SF</strong> &mdash; light dinner near the Clancy, or rest in</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Tasting &middot; Joseph Phelps <em>(confirmed)</em></li><li>Lunch &middot; Cook / Farmstead <em>(TBC)</em></li><li>Dinner &middot; at discretion</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Clancy, Autograph Collection</li><li class="stay-ref">Night 4 of 5</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-5">
+  <div class="day-number">05</div>
+  <div class="date-line">Saturday · May 23, 2026</div>
+  <h1 class="route">An <em>extra</em> day</h1>
+  <div class="route-path">San Francisco</div>
+
+  <section class="spread">
+    <div class="label">At Discretion</div>
+    <div class="content">
+      <h2 class="theme">The optional day</h2>
+      <p class="intro">A short excursion out of the city if the mood takes &mdash; with the BMW X5 and 3 travellers, Santa Cruz, Monterey, or Half Moon Bay all work as full-day round-trips. Otherwise a quiet reset in town. Planning to follow before May 19.</p>
+      <dl class="schedule">
+        <div class="row"><dt>All day</dt><dd><strong>At leisure</strong> <em>(planning to follow)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li><em>At discretion</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Clancy, Autograph Collection</li><li class="stay-ref">Night 5 of 5</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-6">
+  <div class="day-number">06</div>
+  <div class="date-line">Sunday · May 24, 2026</div>
+  <h1 class="route">Into the <em>valley</em></h1>
+  <div class="route-path">SFO<span class="sep">✦</span>JAC<span class="sep">✦</span>Jackson</div>
+
+  <div class="map-header">
+    <span>Day Route &middot; JAC &rarr; Jackson &middot; ~18 km</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/Jackson+Hole+Airport,WY/Jackson,WY" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day6" class="day-map" role="img" aria-label="Map of Day 6 route from Jackson Hole Airport south to Jackson town."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">SFO rental return</h2>
+      <p class="intro">Bags down, keys in, through TSA. The rental centre sits away from the terminals &mdash; AirTrain back is reliable but not fast. Target a 09:30 firm return to make the AS 3468 departure at 11:23.</p>
+      <dl class="schedule">
+        <div class="row"><dt>09:00</dt><dd><strong>SF rental car return</strong> &mdash; SFO Rental Car Center; ~22 km / ~25 min from The Clancy<a class="route-link" href="https://maps.google.com/?q=299+2nd+St+San+Francisco+to+SFO+Rental+Car+Center" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+      </dl>
+      <p class="intro" style="margin-top:22px"><em>Tight turnaround: 09:30 SFO return &rarr; 11:23 AS 3468 departure (10 min tighter than the v9 schedule). Bag-drop cutoff is approximately 10:38. No delay margin.</em></p>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">Flight west</h2>
+      <p class="intro">A short hop into the only US commercial airport inside a national park &mdash; the runway alone on its plateau with the Tetons on the skyline. All three travellers ticketed in First on the Embraer 175.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:23</dt><dd><strong>AS 3468 depart SFO</strong> &mdash; Alaska Airlines (operated by SkyWest), Embraer 175, First class, 3 pax <em>(booked)</em></dd></div>
+        <div class="row"><dt>14:47</dt><dd><strong>Arrive JAC</strong> &mdash; Jackson Hole Airport, inside Grand Teton National Park</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Orientation</h2>
+      <p class="intro">Bear spray, paperwork, eighteen quiet kilometres of highway to the edge of town.</p>
+      <dl class="schedule">
+        <div class="row"><dt>15:10</dt><dd><strong>Bear spray rental</strong> &mdash; JAC Bear Aware Kiosk, baggage claim <span class="note">(return Thu May 28, Central Valley Fire District, Belgrade MT)</span></dd></div>
+        <div class="row"><dt>15:30</dt><dd><strong>YNP rental car pickup</strong> &mdash; Trip.com [YNP_CAR_REF], Chevrolet Equinox or equivalent</dd></div>
+        <div class="row"><dt>15:45</dt><dd><strong>Drive JAC &rarr; Jackson</strong> &mdash; 18 km south on US-89/191<a class="route-link" href="https://www.google.com/maps/dir/Jackson+Hole+Airport,WY/Jackson,WY" target="_blank" rel="noopener">&rarr; View route</a></dd></div>
+        <div class="row"><dt>16:00</dt><dd><strong>Check in &middot; The Cloudveil, Autograph Collection</strong> &mdash; Jackson WY; 2 Queen, 1 room / 3 adults; 2-block walk to Town Square</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Town Square</h2>
+      <p class="intro">Four elk-antler arches at the corners of George Washington Memorial Park, western galleries up Center and Broadway, dinner on foot.</p>
+      <dl class="schedule">
+        <div class="row"><dt>17:30</dt><dd><strong>Jackson Town Square</strong> — antler arches, galleries on Center and Broadway</dd></div>
+        <div class="row"><dt>19:30</dt><dd><strong>Dinner</strong> — Snake River Grill / Bin22 / Glorietta <em>(TBC)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Hotel (SF)</li><li>Lunch · Onboard AS3468</li><li>Dinner · Jackson <em>(TBC)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">The Cloudveil, Autograph Collection</li><li class="stay-ref">2 Queen &middot; 1 of 1</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-7">
+  <div class="day-number">07</div>
+  <div class="date-line">Monday · May 25, 2026</div>
+  <h1 class="route">Grand Teton <em>to</em> Yellowstone</h1>
+  <div class="route-path">Jackson<span class="sep">✦</span>Mormon Row<span class="sep">✦</span>Schwabacher<span class="sep">✦</span>Snake River<span class="sep">✦</span>Dornan's<span class="sep">✦</span>Jenny Lake<span class="sep">✦</span>West Thumb<span class="sep">✦</span>Lake Hotel</div>
+
+  <div class="map-header">
+    <span>Day Route · 8 Stops · ~210 km</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=Jackson,WY&amp;destination=Lake+Yellowstone+Hotel,WY&amp;waypoints=T.A.+Moulton+Barn,Moose,WY|Schwabacher+Landing,Moose,WY|Snake+River+Overlook,WY|Dornans,Moose,WY|Jenny+Lake+Overlook,WY|West+Thumb+Geyser+Basin,WY&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day7" class="day-map" role="img" aria-label="Map of Day 7 route from Jackson to Lake Yellowstone Hotel via eight stops."></div>
+
+  <section class="spread">
+    <div class="label">Before Dawn</div>
+    <div class="content">
+      <h2 class="theme">A start before the valley wakes</h2>
+      <p class="intro">Out of Jackson while the town is still quiet — four degrees outside, full layers, coffee in the thermos.</p>
+      <dl class="schedule">
+        <div class="row"><dt>06:30</dt><dd><strong>Wake</strong> — Jackson hotel; <span class="note">sunrise at 05:50 has already lit the Tetons' east face</span></dd></div>
+        <div class="row"><dt>07:30</dt><dd><strong>Check out</strong> — north on US-191</dd></div>
+        <div class="row"><dt>07:55</dt><dd><strong>Antelope Flats Road</strong> — 24 km north, right turn into the sagebrush plain<a class="route-link" href="https://www.google.com/maps/dir/Jackson,WY/T.A.+Moulton+Barn,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">The A-list of Grand Teton, done before breakfast</h2>
+      <p class="intro">The signature Teton viewpoints in sequence — barn, reflections, overlook — with a long breakfast at the end to reward the early start.</p>
+      <dl class="schedule">
+        <div class="row"><dt>08:00</dt><dd><strong>T.A. Moulton Barn</strong> — 1912 Mormon homestead, first warm light on the Grand <span class="note">· 30 min</span></dd></div>
+        <div class="row"><dt>08:30</dt><dd><strong>Schwabacher Landing</strong> — Teton reflections on the Snake; moose-calving season, keep bear spray close <span class="note">· 30 min</span><a class="route-link" href="https://www.google.com/maps/dir/T.A.+Moulton+Barn,Moose,WY/Schwabacher+Landing,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:10</dt><dd><strong>Snake River Overlook</strong> — Ansel Adams' 1942 viewpoint <span class="note">· 15 min</span><a class="route-link" href="https://www.google.com/maps/dir/Schwabacher+Landing,Moose,WY/Snake+River+Overlook,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:45</dt><dd><strong>Breakfast at Dornan's</strong>, Moose — family-run since 1948, chuckwagon deck facing the range <span class="note">· 75 min</span><a class="route-link" href="https://www.google.com/maps/dir/Snake+River+Overlook,WY/Dornans,Moose,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>11:15</dt><dd><strong>Jenny Lake Overlook</strong> — east shore, Cathedral Group <span class="note">· 20 min (optional Taggart Lake hike, 3.3 mi, if weather holds)</span><a class="route-link" href="https://www.google.com/maps/dir/Dornans,Moose,WY/Jenny+Lake+Overlook,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">North across the Parkway, into the geyser country</h2>
+      <p class="intro">A return stop at Dornan's for lunch, then the long drive north through the Rockefeller Parkway into Yellowstone.</p>
+      <dl class="schedule">
+        <div class="row"><dt>12:15</dt><dd><strong>Lunch at Dornan's</strong> — fill thermoses; no food services until Lake Hotel</dd></div>
+        <div class="row"><dt>13:00</dt><dd><strong>Drive north</strong> — ~100 km via the Rockefeller Parkway and Yellowstone's South Entrance <span class="note">· ~1h 40min</span><a class="route-link" href="https://www.google.com/maps/dir/Dornans,Moose,WY/West+Thumb+Geyser+Basin,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>14:45</dt><dd><strong>West Thumb Geyser Basin</strong> — lakeside hot springs, 30-min boardwalk <span class="note">· defer if the schedule has slipped</span></dd></div>
+        <div class="row"><dt>15:30</dt><dd><strong>Lake Yellowstone Hotel</strong> — 1891 Colonial Revival on the north shore; rocking chairs on the Sun Room porch</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">An 1891 room, a lake-view window</h2>
+      <p class="intro">Dinner in the hotel's original dining room — bison, lake trout, regional pours, west-side window requested.</p>
+      <dl class="schedule">
+        <div class="row"><dt>18:15</dt><dd><strong>Dinner &middot; Lake Hotel Dining Room</strong> &mdash; original 1891 dining room; party of 3; request west-side window <span class="note">(reservation confirmed [LAKE_DINING_TOCK])</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · In-room or hotel</li><li>Lunch · Dornan's, Moose WY</li><li>Dinner · Lake Hotel Dining Room <em>(confirmed, 6:15 pm)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">Lake Yellowstone Hotel &amp; Cabins</li><li class="stay-ref">Xanterra · [LAKE_CONF]</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure>
+      <div class="frame"><img loading="lazy" alt="The T.A. Moulton Barn on Mormon Row with the Teton range behind in morning light." src="https://lh3.googleusercontent.com/place-photos/AJRVUZON0L6XfYWtM8sEOvGhw9RXsYaXkj9In_k0urCIXm-2UTH8tRgEFjSV-xKo4jQmbtFUo8DbDNWxOJpcX2TWYt-ilWhYQTwbTMuxqwUF1bsCMegfXVE8zH4_9d2qxBLztw25L5fDZcRHri8Rc7I=s4800-w800-h600"></div>
+      <figcaption>T.A. Moulton Barn · Mormon Row</figcaption>
+    </figure>
+    <figure>
+      <div class="frame"><img loading="lazy" alt="Schwabacher Landing on the Snake River with Teton reflections on still water." src="https://lh3.googleusercontent.com/place-photos/AJRVUZPkAN4P4k3N1ueUG8gquJ24ReelJTNXSH6OuXsxvjAsCGlVAKwwxy2M8IZXqHVtUbRiX-eTQb50XBW8kINg4zBq6zHrm1D4RRNamaexuUel2xQ2uqkUfUX1A7slFJLezJSuoMraQm3JjZiOaQ=s4800-w800-h600"></div>
+      <figcaption>Schwabacher Landing · Snake River</figcaption>
+    </figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-8">
+  <div class="day-number">08</div>
+  <div class="date-line">Tuesday · May 26, 2026</div>
+  <h1 class="route">Geysers, <em>and</em> the painted canyon</h1>
+  <div class="route-path">Lake Hotel<span class="sep">✦</span>Old Faithful<span class="sep">✦</span>Grand Prismatic<span class="sep">✦</span>Canyon<span class="sep">✦</span>Artist Point</div>
+
+  <div class="map-header">
+    <span>Day Route · 7 Stops · ~190 km</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=Lake+Yellowstone+Hotel,WY&amp;destination=Canyon+Lodge,Yellowstone,WY&amp;waypoints=Old+Faithful,WY|Grand+Prismatic+Spring,WY|Artist+Point,WY|Inspiration+Point,Yellowstone,WY&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day8" class="day-map" role="img" aria-label="Map of Day 8 route from Lake Hotel over Craig Pass to Old Faithful, Grand Prismatic, and Canyon."></div>
+
+  <section class="spread">
+    <div class="label">Before Breakfast</div>
+    <div class="content">
+      <h2 class="theme">Coffee on the veranda</h2>
+      <p class="intro">The 1891 Sun Room opens its doors early; the lake does the rest of the work.</p>
+      <dl class="schedule">
+        <div class="row"><dt>05:45</dt><dd><strong>Wake</strong> — coffee on the Sun Room veranda</dd></div>
+        <div class="row"><dt>06:30</dt><dd><strong>Breakfast</strong> — Lake Hotel Dining Room, lakeside</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">The geyser country</h2>
+      <p class="intro">Over Craig Pass and into the heart of the volcanic plateau — two of the continent's most-known hot features before noon.</p>
+      <dl class="schedule">
+        <div class="row"><dt>07:30</dt><dd><strong>Check out</strong> — drive over Craig Pass, 8,262 ft, the continental divide<a class="route-link" href="https://www.google.com/maps/dir/Lake+Yellowstone+Hotel,WY/Old+Faithful,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>08:45</dt><dd><strong>Old Faithful + Upper Geyser Basin</strong> — 2.1-mile boardwalk loop; Castle, Grand, Beehive, Morning Glory Pool <span class="note">· 90 min (eruptions every ~90 min)</span></dd></div>
+        <div class="row"><dt>10:30</dt><dd><strong>Grand Prismatic Spring</strong> — 0.8-mile flat boardwalk, largest hot spring in the US <span class="note">· 30 min</span><a class="route-link" href="https://www.google.com/maps/dir/Old+Faithful,WY/Grand+Prismatic+Spring,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">North to Canyon</h2>
+      <p class="intro">Madison to Norris to Canyon — about seventy minutes of driving, lunch on arrival, two quiet hours before the afternoon opens.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:00</dt><dd><strong>Drive Madison → Norris → Canyon</strong> — ~1h 10min<a class="route-link" href="https://www.google.com/maps/dir/Grand+Prismatic+Spring,WY/Canyon+Village,Yellowstone,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>12:15</dt><dd><strong>Lunch</strong> — Canyon Eatery</dd></div>
+        <div class="row"><dt>13:15</dt><dd><strong>Check in</strong> — Canyon Lodge &amp; Cabins · Xanterra [CANYON_CONF] <em>(two-night stay)</em></dd></div>
+        <div class="row"><dt>13:30</dt><dd><strong>Rest</strong> — two quiet hours</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">The Grand Canyon of the Yellowstone</h2>
+      <p class="intro">South rim, then north rim — yellow cliffs, a long waterfall, the postcard view.</p>
+      <dl class="schedule">
+        <div class="row"><dt>15:30</dt><dd><strong>Artist Point</strong> — south rim, Lower Falls framed by yellow canyon walls<a class="route-link" href="https://www.google.com/maps/dir/Canyon+Village,Yellowstone,WY/Artist+Point,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>15:50</dt><dd><strong>Inspiration Point</strong> — north rim, canyon depth <span class="note">(skip the 600-stair Brink of Lower Falls)</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">M66 Grill</h2>
+      <p class="intro">Canyon Lodge's in-house restaurant — walk-in, per 2026 Xanterra policy, no reservations.</p>
+      <dl class="schedule">
+        <div class="row"><dt>19:00</dt><dd><strong>Dinner</strong> — M66 Grill, Canyon Lodge</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Lake Hotel Dining Room</li><li>Lunch · Canyon Eatery</li><li>Dinner · M66 Grill</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">Canyon Lodge &amp; Cabins</li><li class="stay-ref">Xanterra · [CANYON_CONF]</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure><div class="frame"><img loading="lazy" alt="Old Faithful erupting in Upper Geyser Basin." src="https://www.worldatlas.com/r/w768/upload/17/d6/88/shutterstock-677567317.jpg"></div><figcaption>Old Faithful · Upper Geyser Basin</figcaption></figure>
+    <figure><div class="frame"><img loading="lazy" alt="Grand Prismatic Spring, the largest hot spring in the US, seen from above." src="https://www.aceadventurer.com/wp-content/uploads/2019/11/Grand-Prismatic-Spring-Yellowstone-National-Park-Wyoming-United-States.jpg"></div><figcaption>Grand Prismatic Spring · Midway Basin</figcaption></figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-9">
+  <div class="day-number">09</div>
+  <div class="date-line">Wednesday · May 27, 2026</div>
+  <h1 class="route">The wildlife <em>hours</em></h1>
+  <div class="route-path">Canyon<span class="sep">✦</span>Dunraven Pass<span class="sep">✦</span>Lamar Valley<span class="sep">✦</span>Tower Fall<span class="sep">✦</span>Hayden Valley<span class="sep">✦</span>Canyon</div>
+
+  <div class="map-header">
+    <span>Day Route · 6 Stops · Loop</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=Canyon+Lodge,Yellowstone,WY&amp;destination=Canyon+Lodge,Yellowstone,WY&amp;waypoints=Lamar+Valley,WY|Tower+Fall,WY|Hayden+Valley,WY&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day9" class="day-map" role="img" aria-label="Map of Day 9 loop from Canyon through Lamar Valley, Tower Fall, and Hayden Valley."></div>
+
+  <section class="spread">
+    <div class="label">Before Dawn</div>
+    <div class="content">
+      <h2 class="theme">A 05:45 start</h2>
+      <p class="intro">Wildlife moves at the edges of the day. A packed breakfast, a thermos, out of the car park before the light.</p>
+      <dl class="schedule">
+        <div class="row"><dt>05:45</dt><dd><strong>Wake</strong> — coffee; packed breakfast from Canyon General Store (bought the night before)</dd></div>
+        <div class="row"><dt>06:30</dt><dd><strong>Depart Canyon</strong> — via Dunraven Pass <em>(road-opening caveat — text 82190 to 888-777 the night before for alerts; backup via Norris–Mammoth–Tower adds ~45 min + 15 min bridge delay)</em><a class="route-link" href="https://www.google.com/maps/dir/Canyon+Village,Yellowstone,WY/Lamar+Valley,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Lamar Valley</h2>
+      <p class="intro">The Serengeti of North America — bison, pronghorn, and with any luck the wolves of Lamar Canyon or Slough Creek. The best wildlife-watching window of the trip.</p>
+      <dl class="schedule">
+        <div class="row"><dt>07:15</dt><dd><strong>Lamar Valley pullouts</strong> — Slough Creek, Lamar Canyon <span class="note">· ~2h 45min (breakfast in the car around 07:30)</span></dd></div>
+        <div class="row"><dt>10:00</dt><dd><strong>Tower Fall</strong> — 132-ft waterfall framed by rocky pinnacles, 100-ft flat walk<a class="route-link" href="https://www.google.com/maps/dir/Lamar+Valley,WY/Tower+Fall,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>10:45</dt><dd><strong>Drive back</strong> — across Dunraven Pass to Canyon<a class="route-link" href="https://www.google.com/maps/dir/Tower+Fall,WY/Canyon+Village,Yellowstone,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">A hard-earned rest</h2>
+      <p class="intro">Lunch at the lodge, three quiet hours on the bed or the porch.</p>
+      <dl class="schedule">
+        <div class="row"><dt>12:00</dt><dd><strong>Lunch</strong> — Canyon Eatery</dd></div>
+        <div class="row"><dt>13:00</dt><dd><strong>Rest</strong> — three hours at the lodge</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Dusk</div>
+    <div class="content">
+      <h2 class="theme">Hayden Valley</h2>
+      <p class="intro">Sixteen kilometres south of Canyon, a different valley — bison herds in the meadows, grizzlies on the hillsides in late May, pullouts frequent.</p>
+      <dl class="schedule">
+        <div class="row"><dt>16:00</dt><dd><strong>Drive Canyon → Hayden Valley</strong> — 16 km, slow<a class="route-link" href="https://www.google.com/maps/dir/Canyon+Village,Yellowstone,WY/Hayden+Valley,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>16:15</dt><dd><strong>Hayden Valley pullouts</strong> — 90 minutes of quiet watching</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Dinner at Canyon</h2>
+      <p class="intro">Walk-in at the lodge complex, same as last night.</p>
+      <dl class="schedule">
+        <div class="row"><dt>18:30</dt><dd><strong>Dinner</strong> — M66 Grill or Canyon Eatery</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Packed, in the car</li><li>Lunch · Canyon Eatery</li><li>Dinner · M66 Grill / Canyon Eatery</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">Canyon Lodge &amp; Cabins</li><li class="stay-ref">Xanterra · [CANYON_CONF]</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure><div class="frame"><img loading="lazy" alt="A bison herd by the roadside in Lamar Valley, Yellowstone." src="https://outdoorsome.com/wp-content/uploads/2019/09/bison-herd-by-the-roadside-in-lamar-valley.jpg"></div><figcaption>Lamar Valley · Bison herd</figcaption></figure>
+    <figure><div class="frame"><img loading="lazy" alt="Bison herd in the meadows of Hayden Valley, Yellowstone." src="https://img.fotocommunity.com/bisonherde-im-hayden-valley-yellowstone-np-46715d13-9d6e-43c5-ad53-bfaaedbbf604.jpg?height=1080"></div><figcaption>Hayden Valley · Dusk</figcaption></figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-10">
+  <div class="day-number">10</div>
+  <div class="date-line">Thursday · May 28, 2026</div>
+  <h1 class="route">North, <em>out</em> of the park</h1>
+  <div class="route-path">Canyon<span class="sep">✦</span>Mammoth<span class="sep">✦</span>Roosevelt Arch<span class="sep">✦</span>Gardiner<span class="sep">✦</span>Paradise Valley<span class="sep">✦</span>Bozeman</div>
+
+  <div class="map-header">
+    <span>Day Route · 5 Stops · ~210 km</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=Canyon+Lodge,Yellowstone,WY&amp;destination=AC+Hotel+Bozeman+Downtown,Bozeman,MT&amp;waypoints=Mammoth+Hot+Springs,WY|Roosevelt+Arch,Gardiner,MT|Belgrade,MT&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day10" class="day-map" role="img" aria-label="Map of Day 10 route from Canyon through Mammoth and Gardiner to Bozeman."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Mammoth terraces</h2>
+      <p class="intro">The travertine step-pyramids of the north end — limestone water still building the slope, a slow-motion sculpture garden.</p>
+      <dl class="schedule">
+        <div class="row"><dt>07:30</dt><dd><strong>Breakfast</strong> — Canyon Lodge</dd></div>
+        <div class="row"><dt>08:30</dt><dd><strong>Depart Canyon → Mammoth</strong> — 75 min <span class="note">(+15 min buffer for Gardner Bridge construction)</span><a class="route-link" href="https://www.google.com/maps/dir/Canyon+Village,Yellowstone,WY/Mammoth+Hot+Springs,WY" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:45</dt><dd><strong>Mammoth Upper Terrace drive</strong> — loop road, drive-through <span class="note">· 30 min</span></dd></div>
+        <div class="row"><dt>10:15</dt><dd><strong>Mammoth Lower Terrace boardwalk</strong> — Palette Spring, flat walkway only <span class="note">· 45 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">Gardiner</h2>
+      <p class="intro">Through the Gardner River canyon to the park's original entrance — <em>For the Benefit and Enjoyment of the People,</em> dedicated by Roosevelt in 1903.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:00</dt><dd><strong>Drive Mammoth → Gardiner</strong> — 8 km down the river canyon</dd></div>
+        <div class="row"><dt>11:15</dt><dd><strong>Roosevelt Arch</strong> — photograph stop <span class="note">· 5 min</span></dd></div>
+        <div class="row"><dt>11:20</dt><dd><strong>Lunch in Gardiner</strong> — Wonderland Cafe / Iron Horse / The Corral <em>(TBC)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Paradise Valley</h2>
+      <p class="intro">129 kilometres up the Yellowstone River on Highway 89 — Absaroka Range on the right hand, ranchland to the left, the long way out of the park.</p>
+      <dl class="schedule">
+        <div class="row"><dt>12:30</dt><dd><strong>Depart Gardiner</strong> — Hwy 89 north through Paradise Valley<a class="route-link" href="https://www.google.com/maps/dir/Gardiner,MT/Belgrade,MT" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>14:15</dt><dd><strong>Belgrade, MT</strong> — bear spray return at Central Valley Fire District</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Bozeman</h2>
+      <p class="intro">Check in downtown. Dinner options preserved, not prescribed.</p>
+      <dl class="schedule">
+        <div class="row"><dt>15:00</dt><dd><strong>Check in &middot; Residence Inn Bozeman Downtown</strong> &mdash; downtown Bozeman; Larger Studio, 2 Queen + sofa bed; 1 room / 3 adults</dd></div>
+        <div class="row"><dt>19:30</dt><dd><strong>Dinner</strong> — J.W. Heist / Blackbird Kitchen / Montana Ale Works / Bridger Brewing <em>(TBC)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Canyon Lodge</li><li>Lunch · Gardiner <em>(TBC)</em></li><li>Dinner · Bozeman <em>(TBC)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">Residence Inn by Marriott Bozeman Downtown</li><li class="stay-ref">Marriott Bonvoy &middot; 1 of 1</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure><div class="frame"><img loading="lazy" alt="Travertine terraces at Mammoth Hot Springs, Yellowstone National Park." src="https://c8.alamy.com/comp/F7CNPH/travertine-terraces-in-mammoth-hot-springs-yellowstone-national-park-F7CNPH.jpg"></div><figcaption>Mammoth Hot Springs · Lower Terrace</figcaption></figure>
+    <figure><div class="frame"><img loading="lazy" alt="Roosevelt Arch at the north entrance to Yellowstone, Gardiner, Montana." src="https://c8.alamy.com/comp/HTRRD8/roosevelt-arch-at-the-north-entrance-to-yellowstone-national-park-HTRRD8.jpg"></div><figcaption>Roosevelt Arch · Gardiner, MT</figcaption></figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-11">
+  <div class="day-number">11</div>
+  <div class="date-line">Friday · May 29, 2026</div>
+  <h1 class="route">To the <em>Sound</em></h1>
+  <div class="route-path">Bozeman<span class="sep">&#10022;</span>BZN<span class="sep">&#10022;</span>SEA<span class="sep">&#10022;</span>W Seattle<span class="sep">&#10022;</span>Great Wheel<span class="sep">&#10022;</span>Aquarium<span class="sep">&#10022;</span>SIX SEVEN</div>
+
+  <div class="map-header">
+    <span>Day Route &middot; Arrival &amp; Waterfront</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=Seattle-Tacoma+International+Airport&amp;destination=SIX+SEVEN+Restaurant+Seattle&amp;waypoints=W+Seattle+1112+4th+Ave|Seattle+Great+Wheel|Seattle+Aquarium&amp;travelmode=transit" target="_blank" rel="noopener">&rarr; View full route</a>
+  </div>
+  <div id="route-map-day11" class="day-map" role="img" aria-label="Map of Day 11 route."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Departure</h2>
+      <p class="intro">Breakfast in downtown Bozeman, a short drive to the airport, the last flight of the trip's first half.</p>
+      <dl class="schedule">
+        <div class="row"><dt>07:30</dt><dd><strong>Breakfast</strong> &mdash; Jam! or The Nova Cafe, walkable from AC Hotel</dd></div>
+        <div class="row"><dt>08:45</dt><dd><strong>Drive Bozeman &rarr; BZN</strong> &mdash; 13 km / ~20 min<a class="route-link" href="https://maps.google.com/?q=AC+Hotel+Bozeman+to+BZN+Airport" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>10:00</dt><dd><strong>YNP rental car return</strong> &mdash; Trip.com [YNP_CAR_REF], BZN</dd></div>
+        <div class="row"><dt>11:43</dt><dd><strong>AS 3182 depart BZN</strong> &mdash; Alaska Airlines (operated by SkyWest), Embraer 175, First class, 3 pax <em>(booked)</em></dd></div>
+        <div class="row"><dt>12:43</dt><dd><strong>Arrive SEA</strong> &mdash; Seattle-Tacoma International</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Into Seattle</h2>
+      <p class="intro">Link Light Rail downtown to Symphony Station &mdash; three to four minutes' walk from the W, closer than Westlake.</p>
+      <dl class="schedule">
+        <div class="row"><dt>13:15</dt><dd><strong>Link Light Rail SEA &rarr; Symphony Station</strong> &mdash; ~38 min<a class="route-link" href="https://maps.google.com/?q=SEA+Airport+Station+to+Symphony+Station+Seattle" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>14:00</dt><dd><strong>Drop bags &mdash; W Seattle</strong> &mdash; main party room and visiting-guest room (2 rooms total) <em>(rooms typically ready 16:00; request early check-in)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Waterfront</div>
+    <div class="content">
+      <h2 class="theme">Great Wheel + Aquarium</h2>
+      <p class="intro">Pier 57 and Pier 59 are next to each other. Twelve-minute ride at the Wheel, then the Aquarium's Ocean Pavilion (opened August 2024).</p>
+      <dl class="schedule">
+        <div class="row"><dt>14:30</dt><dd><strong>Seattle Great Wheel</strong> &mdash; Pier 57; ~10 min walk from hotel; 12&ndash;15 min ride <span class="note">&middot; pre-book online</span><a class="route-link" href="https://maps.google.com/?q=Seattle+Great+Wheel+Pier+57" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>15:15</dt><dd><strong>Seattle Aquarium</strong> &mdash; Pier 59; Ocean Pavilion included <span class="note">&middot; 2.5&ndash;3 hrs; last entry 17:00</span></dd></div>
+        <div class="row"><dt>17:30</dt><dd><strong>Olympic Sculpture Park (optional)</strong> &mdash; free waterfront sculpture park; 15 min walk north <span class="note">&middot; 45 min; skip if tired</span><a class="route-link" href="https://maps.google.com/?q=Olympic+Sculpture+Park+Seattle" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>18:15</dt><dd><strong>Return to hotel</strong> &mdash; ~10&ndash;15 min</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">SIX SEVEN</h2>
+      <p class="intro">The Edgewater's restaurant on Pier 67 &mdash; Pacific Northwest seafood, floor-to-ceiling windows over Elliott Bay. Reservation confirmed 6:30 pm, 3 pax.</p>
+      <dl class="schedule">
+        <div class="row"><dt>18:30</dt><dd><strong>Dinner &middot; SIX SEVEN Restaurant</strong> &mdash; Pier 67 @ The Edgewater Hotel; Pacific Northwest seafood; floor-to-ceiling Elliott Bay views; 18 min walk or 5 min Uber from hotel <span class="note">(reservation confirmed 6:30 pm, 3 pax)</span><a class="route-link" href="https://maps.google.com/?q=SIX+SEVEN+Restaurant+Edgewater+Seattle" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>21:00</dt><dd><strong>Back to hotel</strong> &mdash; end of a long travel day</dd></div>
+      </dl>
+      <p class="intro" style="margin-top:22px"><em>If the Aquarium runs long, skip the Sculpture Park and head directly to SIX SEVEN.</em></p>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast &middot; Bozeman</li><li>Lunch &middot; Onboard AS 3182</li><li>Dinner &middot; SIX SEVEN <em>(confirmed 6:30 pm)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">W Seattle <em>(2 rooms: main party + visiting guest)</em></li><li class="stay-ref">Marriott Bonvoy &middot; Night 1 of 4</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-12">
+  <div class="day-number">12</div>
+  <div class="date-line">Saturday · May 30, 2026</div>
+  <h1 class="route">The <em>iconic</em> Seattle day</h1>
+  <div class="route-path">W Seattle<span class="sep">&#10022;</span>Tulio<span class="sep">&#10022;</span>Pike Place<span class="sep">&#10022;</span>Pink Door<span class="sep">&#10022;</span>Seattle Center<span class="sep">&#10022;</span>Wild Ginger<span class="sep">&#10022;</span>Kerry Park</div>
+
+  <div class="map-header">
+    <span>Day Route &middot; 9 Stops</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=W+Seattle&amp;destination=Kerry+Park,Seattle&amp;waypoints=Tulio+Seattle|Pike+Place+Market|The+Pink+Door+Seattle|Chihuly+Garden+and+Glass|Space+Needle|Wild+Ginger+Seattle&amp;travelmode=walking" target="_blank" rel="noopener">&rarr; View full route</a>
+  </div>
+  <div id="route-map-day12" class="day-map" role="img" aria-label="Map of Day 12."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Tulio brunch</h2>
+      <p class="intro">Cafe Migliore is closed weekends &mdash; Tulio is the brunch substitute. Rustic Italian inside the Kimpton Hotel Vintage, four minutes on foot from the W.</p>
+      <dl class="schedule">
+        <div class="row"><dt>09:00</dt><dd><strong>Breakfast &middot; Tulio</strong> &mdash; Kimpton Hotel Vintage downtown; Saturday brunch 8&ndash;12; 4 min walk from W; Italian <span class="note">&middot; ~60 min; book OpenTable</span></dd></div>
+        <div class="row"><dt>10:00</dt><dd><strong>Walk to Pike Place</strong> &mdash; 10 min<a class="route-link" href="https://www.google.com/maps/dir/W+Seattle/Pike+Place+Market,Seattle" target="_blank" rel="noopener">&rarr; View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Late Morning</div>
+    <div class="content">
+      <h2 class="theme">Pike Place proper</h2>
+      <p class="intro">Gum Wall, the fish throwers, DeLaurenti for Italian groceries since 1946, the lower levels.</p>
+      <dl class="schedule">
+        <div class="row"><dt>10:00</dt><dd><strong>Pike Place Market</strong> <span class="note">&middot; 90 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">The Pink Door &mdash; confirmed</h2>
+      <p class="intro">The unmarked door on Post Alley. Reservation confirmed for 11:30 lunch, 3 pax.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:30</dt><dd><strong>Lunch &middot; The Pink Door</strong> &mdash; Post Alley, Pike Place; Italian-American trattoria; unmarked door <span class="note">(reservation confirmed [PINK_DOOR_CONF]; 11:30 am, 3 pax)</span> <span class="note">&middot; ~90 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Seattle Center</h2>
+      <p class="intro">The 1962 World's Fair monorail, two minutes north. Chihuly's glass, the Needle, Gehry's metallic building for the Northwest's music history.</p>
+      <dl class="schedule">
+        <div class="row"><dt>13:15</dt><dd><strong>Monorail Westlake &rarr; Seattle Center</strong> &mdash; 2-min ride</dd></div>
+        <div class="row"><dt>13:30</dt><dd><strong>Chihuly Garden and Glass</strong> &mdash; Seattle Center; Glasshouse suspended piece + outdoor garden <span class="note">&middot; 90 min</span></dd></div>
+        <div class="row"><dt>15:00</dt><dd><strong>Space Needle</strong> &mdash; Seattle Center; 184m observation; The Loupe rotating glass floor <span class="note">&middot; 60 min</span></dd></div>
+        <div class="row"><dt>16:00</dt><dd><strong>MoPOP</strong> &mdash; Seattle Center, Gehry building; Hendrix, Nirvana, Pearl Jam <span class="note">&middot; ~60 min (17:00 close)</span></dd></div>
+        <div class="row"><dt>17:00</dt><dd><strong>Return to hotel, rest</strong> &mdash; Wild Ginger is smart casual</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Wild Ginger</h2>
+      <p class="intro">Canlis was dropped. Wild Ginger replaces it &mdash; pan-Asian, Pacific Rim, downtown at 3rd &amp; Union, four minutes on foot from the W. 6 pm reservation, 3 pax.</p>
+      <dl class="schedule">
+        <div class="row"><dt>18:00</dt><dd><strong>Dinner &middot; Wild Ginger</strong> &mdash; downtown (3rd &amp; Union); Pan-Asian, Pacific Rim; ~4 min walk from W <span class="note">&middot; ~90 min; book OpenTable, 6:00 pm, 3 pax</span><a class="route-link" href="https://maps.google.com/?q=Wild+Ginger+Seattle" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Night</div>
+    <div class="content">
+      <h2 class="theme">Kerry Park</h2>
+      <p class="intro">The postcard viewpoint &mdash; Space Needle front, downtown to the left, Rainier centred behind on clear days. Sunset 20:55; stay through blue hour.</p>
+      <dl class="schedule">
+        <div class="row"><dt>20:00</dt><dd><strong>Uber &rarr; Kerry Park SUNSET</strong> &mdash; ~12 min Uber; Queen Anne; sunset ~20:55; Space Needle + skyline + Rainier; blue hour to 21:30<a class="route-link" href="https://maps.google.com/?q=Kerry+Park+Seattle" target="_blank" rel="noopener">&rarr; Open in Maps</a></dd></div>
+        <div class="row"><dt>20:55</dt><dd><strong>Sunset</strong> &mdash; stay for blue hour to ~21:30</dd></div>
+        <div class="row"><dt>21:45</dt><dd><strong>Uber back to W Seattle</strong> &mdash; ~15 min</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Brunch &middot; Tulio <em>(book)</em></li><li>Lunch &middot; The Pink Door <em>(confirmed)</em></li><li>Dinner &middot; Wild Ginger <em>(book, 6 pm)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">W Seattle</li><li class="stay-ref">Marriott Bonvoy &middot; Night 2 of 4</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-13">
+  <div class="day-number">13</div>
+  <div class="date-line">Sunday · May 31, 2026</div>
+  <h1 class="route">The <em>salt water</em> day</h1>
+  <div class="route-path">W Seattle<span class="sep">✦</span>Ballard<span class="sep">✦</span>Locks<span class="sep">✦</span>Colman Dock<span class="sep">✦</span>Bainbridge<span class="sep">✦</span>Capitol Hill</div>
+
+  <div class="map-header">
+    <span>Day Route · 8 Stops</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=W+Seattle&amp;destination=Cascina+Spinasse,Seattle&amp;waypoints=Ballard+Farmers+Market,Seattle|Ballard+Locks,Seattle|Colman+Dock,Seattle|Bainbridge+Island,WA&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day13" class="day-map" role="img" aria-label="Map of Day 13 route from W Seattle through Ballard, Bainbridge, and Capitol Hill."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Ballard</h2>
+      <p class="intro">North to the old Scandinavian fishing neighbourhood — Sunday market, then the locks where the salmon climb.</p>
+      <dl class="schedule">
+        <div class="row"><dt>08:30</dt><dd><strong>Uber W Seattle → Ballard</strong> — ~20 min<a class="route-link" href="https://www.google.com/maps/dir/W+Seattle/Ballard+Farmers+Market,Seattle" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>09:00</dt><dd><strong>Ballard Locks + fish ladder</strong> &mdash; free; peak salmon late May&ndash;June; Visitor Center opens 10:00 <span class="note">&middot; 60 min</span></dd></div>
+        <div class="row"><dt>10:15</dt><dd><strong>Ballard Farmers Market</strong> &mdash; cobblestone Ballard Ave; 100+ vendors; Sun 9&ndash;14 only <span class="note">&middot; ~90 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">The Walrus</h2>
+      <p class="intro">Renee Erickson's oyster bar, no reservations — be at the door at opening sharp. Leave the locks by quarter to twelve.</p>
+      <dl class="schedule">
+        <div class="row"><dt>11:45</dt><dd><strong>Leave Locks</strong> — walk to The Walrus</dd></div>
+        <div class="row"><dt>12:00</dt><dd><strong>Lunch</strong> — The Walrus and the Carpenter, 4743 Ballard Ave NW<a class="route-link" href="https://www.google.com/maps/dir/Ballard+Locks,Seattle/The+Walrus+and+the+Carpenter,Seattle" target="_blank" rel="noopener">→ View route</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Bainbridge crossing</h2>
+      <p class="intro">WSF ferry out of Colman Dock — upper deck, left side, Rainier and the Olympics on the way over. A small Sunday town on the far side.</p>
+      <dl class="schedule">
+        <div class="row"><dt>14:00</dt><dd><strong>Uber to Colman Dock</strong> — Pier 52 <span class="note">· ~30 min</span><a class="route-link" href="https://www.google.com/maps/dir/The+Walrus+and+the+Carpenter,Seattle/Colman+Dock,Seattle" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>14:55</dt><dd><strong>WSF ferry to Bainbridge</strong> — 35 min <em>(Sunday schedule to be reconfirmed)</em><a class="route-link" href="https://www.google.com/maps/dir/Colman+Dock,Seattle/Bainbridge+Island,WA" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>15:30</dt><dd><strong>Winslow</strong> — Bainbridge Island Museum of Art (free), Eagle Harbor trail, Winslow Way <span class="note">· 2 hours</span></dd></div>
+        <div class="row"><dt>17:35</dt><dd><strong>Ferry back to Seattle</strong></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">Cascina Spinasse</h2>
+      <p class="intro">Capitol Hill. Piedmontese hand-cut tajarin is the signature. Open Sunday; book three weeks out.</p>
+      <dl class="schedule">
+        <div class="row"><dt>18:30</dt><dd><strong>Walk to hotel to change</strong></dd></div>
+        <div class="row"><dt>19:30</dt><dd><strong>Dinner &middot; Cascina Spinasse</strong> &mdash; Capitol Hill; Piedmontese hand-cut tajarin; Uber 12 min <em>(reservation pending &mdash; book 3+ weeks ahead, 3 pax)</em></dd></div>
+        <div class="row"><dt>22:00</dt><dd><strong>Tavern Law</strong> &mdash; Capitol Hill speakeasy <em>(optional nightcap)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Hotel or Ballard</li><li>Lunch · The Walrus and the Carpenter</li><li>Dinner · Cascina Spinasse <em>(reservation pending)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">W Seattle <em>(main party only &mdash; visiting guest checked out earlier today)</em></li><li class="stay-ref">Marriott Bonvoy &middot; Night 3 of 4</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure><div class="frame"><img loading="lazy" alt="Ballard Locks and the fish ladder on the Lake Washington Ship Canal." src="https://seattlerefined.com/resources/media2/16x9/2048/986/0x192/90/87415c38-d4dc-405f-b1da-dcc0e6f485dc-F1.jpg"></div><figcaption>Ballard Locks · Fish Ladder</figcaption></figure>
+    <figure><div class="frame"><img loading="lazy" alt="Washington State Ferry crossing to Bainbridge Island from Seattle." src="https://winslowwaterfronthome.com/wp-content/uploads/2021/05/243Lovell-2.jpg"></div><figcaption>WSF Ferry · Elliott Bay</figcaption></figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-14">
+  <div class="day-number">14</div>
+  <div class="date-line">Monday · June 1, 2026</div>
+  <h1 class="route">A <em>last</em> walk through the city</h1>
+  <div class="route-path">Capitol Hill<span class="sep">✦</span>Volunteer Park<span class="sep">✦</span>Pioneer Square<span class="sep">✦</span>Smith Tower<span class="sep">✦</span>SEA</div>
+
+  <div class="map-header">
+    <span>Day Route · 6 Stops</span>
+    <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=W+Seattle&amp;destination=Seattle-Tacoma+International+Airport&amp;waypoints=Elliott+Bay+Book+Company,Seattle|Volunteer+Park,Seattle|Smith+Tower,Seattle|Pioneer+Square,Seattle&amp;travelmode=driving" target="_blank" rel="noopener">→ View full route</a>
+  </div>
+  <div id="route-map-day14" class="day-map" role="img" aria-label="Map of Day 14 route through Capitol Hill, Volunteer Park, Pioneer Square, and SEA airport."></div>
+
+  <section class="spread">
+    <div class="label">Morning</div>
+    <div class="content">
+      <h2 class="theme">Capitol Hill</h2>
+      <p class="intro">Coffee, a bookshop that writes its own staff cards, record shops, the rainbow crosswalks at Broadway.</p>
+      <dl class="schedule">
+        <div class="row"><dt>09:45</dt><dd><strong>Breakfast / coffee &middot; Victrola</strong> &mdash; Capitol Hill flagship; Mon 7&ndash;18; 1920s auto-row building <span class="note">&middot; ~45 min</span></dd></div>
+        <div class="row"><dt>10:30</dt><dd><strong>Capitol Hill browse</strong> &mdash; Elliott Bay Book Company; record shops; Broadway rainbow crosswalks <span class="note">&middot; 90 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Midday</div>
+    <div class="content">
+      <h2 class="theme">Volunteer Park</h2>
+      <p class="intro">Malaysian lunch, a 106-step climb up a brick turret for the 360° view. Asian Art Museum closed Mondays — skip.</p>
+      <dl class="schedule">
+        <div class="row"><dt>12:00</dt><dd><strong>Lunch &middot; Koko's Restaurant &amp; Tequila Bar</strong> &mdash; Capitol Hill; modern Latin / Mexican; Mon 11&ndash;22; graffiti-wall entrance <span class="note">&middot; ~75 min; book OpenTable</span></dd></div>
+        <div class="row"><dt>13:15</dt><dd><strong>Volunteer Park Water Tower</strong> &mdash; Capitol Hill; 106-step turret, free; Asian Art Museum closed Mondays <span class="note">&middot; 60 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Afternoon</div>
+    <div class="content">
+      <h2 class="theme">Pioneer Square</h2>
+      <p class="intro">Down to the oldest quarter of the city — Smith Tower, 1914, the speakeasy-era bar on the 35th floor.</p>
+      <dl class="schedule">
+        <div class="row"><dt>15:00</dt><dd><strong>Smith Tower observatory</strong> &mdash; Pioneer Square; 1914 neoclassical; 35F bar opens noon Mondays; Waterfall Garden Park + Occidental Square adjacent <span class="note">&middot; 90 min</span></dd></div>
+        <div class="row"><dt>16:30</dt><dd><strong>Westlake Center</strong> &mdash; downtown 3-storey mall; Nordstrom flagship + Pacific Place adjacent; ~10 min walk from Pioneer Square <span class="note">&middot; ~90 min</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Evening</div>
+    <div class="content">
+      <h2 class="theme">The last dinner</h2>
+      <p class="intro">Musang on Beacon Hill, The Pink Door if unused on Friday, or Tomo in White Center.</p>
+      <dl class="schedule">
+        <div class="row"><dt>17:30</dt><dd><strong>Pack at hotel</strong></dd></div>
+        <div class="row"><dt>19:00</dt><dd><strong>Dinner</strong> — Musang / The Pink Door / Tomo <em>(TBC)</em></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Late</div>
+    <div class="content">
+      <h2 class="theme">To the airport</h2>
+      <p class="intro">Check out, a last Uber south, international check-in, the long trip home.</p>
+      <dl class="schedule">
+        <div class="row"><dt>21:30</dt><dd><strong>Collect bags, check out</strong> — W Seattle</dd></div>
+        <div class="row"><dt>22:15</dt><dd><strong>Uber to SEA</strong> — ~25 min<a class="route-link" href="https://www.google.com/maps/dir/W+Seattle/Seattle-Tacoma+International+Airport" target="_blank" rel="noopener">→ View route</a></dd></div>
+        <div class="row"><dt>22:45</dt><dd><strong>International check-in</strong> — CI021 at 01:15 Tue Jun 2</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Breakfast · Capitol Hill</li><li>Lunch · Capitol Hill <em>(TBC)</em></li><li>Dinner · Seattle <em>(TBC)</em></li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">W Seattle <em>(last night)</em></li><li class="stay-ref">Marriott Bonvoy · [W_CONF]</li></ul>
+    </div>
+  </div>
+
+  <div class="photos">
+    <figure><div class="frame"><img loading="lazy" alt="The Space Needle rising above Seattle Center." src="https://pics.craiyon.com/2024-06-19/BhoY1N0UTeWEpposcI4r2A.webp"></div><figcaption>Space Needle · Seattle Center</figcaption></figure>
+    <figure><div class="frame"><img loading="lazy" alt="Museum of Pop Culture, the Frank Gehry building at Seattle Center." src="https://c8.alamy.com/comp/T3T4JA/museum-of-pop-culture-mopop-architect-frank-gehry-seattle-washington-usa-T3T4JA.jpg"></div><figcaption>MoPOP · Frank Gehry, 2000</figcaption></figure>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-15">
+  <div class="day-number">15</div>
+  <div class="date-line">Tuesday · June 2, 2026</div>
+  <h1 class="route">Homeward, <em>across</em> the Pacific</h1>
+  <div class="route-path">SEA<span class="sep">✦</span>TPE</div>
+
+  <section class="spread">
+    <div class="label">Late Morning</div>
+    <div class="content">
+      <h2 class="theme">3rd traveller &mdash; solo south</h2>
+      <p class="intro">Independent departure: pack up, check out of the W, Link Light Rail or Uber to SEA, onward to SFO mid-afternoon. Pacing relaxed compared to the v9 noon plan.</p>
+      <dl class="schedule">
+        <div class="row"><dt>~10:00</dt><dd><strong>Wake, pack, check out W Seattle</strong> &mdash; 4-night booking ends</dd></div>
+        <div class="row"><dt>~12:00</dt><dd><strong>3rd pax &rarr; SEA Airport</strong> &mdash; Symphony Station &rarr; SEA via Link (~40 min) <em>or</em> Uber (~25 min)</dd></div>
+        <div class="row"><dt>13:50</dt><dd><strong>AS 680 depart SEA</strong> &mdash; Alaska Airlines, Main cabin <em>(booked)</em></dd></div>
+        <div class="row"><dt>16:04</dt><dd><strong>Arrive SFO</strong> &mdash; end of trip for the 3rd traveller</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spread">
+    <div class="label">Departure</div>
+    <div class="content">
+      <h2 class="theme">CI021</h2>
+      <p class="intro">An hour past midnight, the long westbound crossing begins. Sleep finds who it finds.</p>
+      <dl class="schedule">
+        <div class="row"><dt>01:15</dt><dd><strong>CI021 depart SEA</strong> &mdash; China Airlines A350-900, Business, 2 pax <em>(booked)</em></dd></div>
+        <div class="row"><dt>—</dt><dd><strong>Westbound Pacific crossing</strong> — the dateline jumps forward; arrival the following calendar day</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Onboard CI021</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">CI021 · Seattle to Taipei</li><li class="stay-ref">Business cabin · 2 pax</li></ul>
+    </div>
+  </div>
+</article>
+<hr class="day-rule">
+
+<article class="day" id="day-16">
+  <div class="day-number">16</div>
+  <div class="date-line">Wednesday · June 3, 2026</div>
+  <h1 class="route"><em>Home</em></h1>
+  <div class="route-path">TPE</div>
+
+  <section class="spread">
+    <div class="label">Arrival</div>
+    <div class="content">
+      <h2 class="theme">The loop closes</h2>
+      <p class="intro">Before dawn at Terminal 2. Sixteen days, four flights, two national parks, one city on the Sound.</p>
+      <dl class="schedule">
+        <div class="row"><dt>05:00</dt><dd><strong>Arrive TPE</strong> — Terminal 2; immigration, and home</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="services">
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="20" r="7"/><path d="M8 5 V11 M10 5 V11 M12 5 V11"/><path d="M10 11 V15"/><path d="M20 5 Q20 12 23 12 Q26 12 26 5 Z"/><path d="M23 12 V20"/><path d="M20 20 H26"/></svg>
+      <div class="s-label">Dining</div>
+      <ul><li>Onboard CI021</li></ul>
+    </div>
+    <div class="service">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20 V13 H16 V18"/><path d="M7 18 Q7 15 10 15 H14 Q15 15 15 17 V18"/><path d="M4 18 H28 V22 H4 Z"/><path d="M5 22 V25 M27 22 V25"/><path d="M22 18 V13"/><path d="M20 13 H24 L23 9 H21 Z"/></svg>
+      <div class="s-label">Overnight</div>
+      <ul><li class="stay-name">—</li><li class="stay-ref">Home, Taipei</li></ul>
+    </div>
+  </div>
+</article>
+</main>
+
+<section class="appendix">
+  <p class="appendix-eyebrow">Appendix</p>
+  <h2 class="appendix-title">Practicalities</h2>
+
+  <div class="practical">
+    <div class="label">The Flights</div>
+    <div class="content">
+      <h3 class="theme">Five segments, all booked</h3>
+      <p>Two long-haul crossings bracket the trip on China Airlines business; the three Alaska legs (two for the full party, one solo for the 3rd traveller) are now ticketed. Note the BZN&rarr;SEA flight is <strong>AS 3182</strong> &mdash; the v9 Word doc carried a typo (AS 2182).</p>
+      <ul class="compact">
+        <li><span><strong>CI004</strong> &middot; TPE &rarr; SFO &middot; 23:30 &rarr; 19:55 &middot; 777-300ER &middot; Business &middot; 2 pax</span><span class="meta">Tue May 19 &middot; Booked</span></li>
+        <li><span><strong>AS 3468</strong> &middot; SFO &rarr; JAC &middot; 11:23 &rarr; 14:47 &middot; Embraer 175 &middot; First &middot; 3 pax</span><span class="meta">Sun May 24 &middot; Booked</span></li>
+        <li><span><strong>AS 3182</strong> &middot; BZN &rarr; SEA &middot; 11:43 &rarr; 12:43 &middot; Embraer 175 &middot; First &middot; 3 pax</span><span class="meta">Fri May 29 &middot; Booked</span></li>
+        <li><span><strong>CI021</strong> &middot; SEA &rarr; TPE &middot; 01:15 &rarr; 05:00 (arr Jun 3) &middot; A350-900 &middot; Business &middot; 2 pax</span><span class="meta">Tue Jun 2 &middot; Booked</span></li>
+        <li><span><strong>AS 680</strong> &middot; SEA &rarr; SFO &middot; 13:50 &rarr; 16:04 &middot; Main &middot; 1 pax (3rd traveller)</span><span class="meta">Tue Jun 2 &middot; Booked</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="practical">
+    <div class="label">The Accommodations</div>
+    <div class="content">
+      <h3 class="theme">Seven rooms, sixteen nights</h3>
+      <p>All confirmed. The Cloudveil replaces the Jackson placeholder; Residence Inn Bozeman replaces the AC Hotel plan. A second W Seattle room is held for the visiting guest for the first two of those nights.</p>
+      <ul class="compact">
+        <li><span><strong>The Clancy, Autograph Collection</strong> &mdash; 5 nights, Skyline View 2 Queen, SoMa</span><span class="meta">May 19&ndash;24 &middot; Confirmed</span></li>
+        <li><span><strong>The Cloudveil, Autograph Collection</strong> &mdash; 1 night, 2 Queen, Jackson WY</span><span class="meta">May 24&ndash;25 &middot; Confirmed</span></li>
+        <li><span><strong>Lake Yellowstone Hotel &amp; Cabins</strong> &mdash; 1 night, Xanterra</span><span class="meta">May 25&ndash;26 &middot; Confirmed</span></li>
+        <li><span><strong>Canyon Lodge &amp; Cabins</strong> &mdash; 2 nights, Xanterra</span><span class="meta">May 26&ndash;28 &middot; Confirmed</span></li>
+        <li><span><strong>Residence Inn by Marriott Bozeman Downtown</strong> &mdash; 1 night, Larger Studio 2 Queen + sofa bed, downtown Bozeman</span><span class="meta">May 28&ndash;29 &middot; Confirmed</span></li>
+        <li><span><strong>W Seattle &mdash; main party</strong> &mdash; 4 nights, 2 Queen, Marriott Bonvoy</span><span class="meta">May 29 &ndash; Jun 2 &middot; Confirmed</span></li>
+        <li><span><strong>W Seattle &mdash; visiting guest</strong> &mdash; 2 nights, 2 Double Beds Deluxe, High Floor</span><span class="meta">May 29&ndash;31 &middot; Confirmed</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="practical">
+    <div class="label">Outstanding</div>
+    <div class="content">
+      <h3 class="theme">Arrangements still to make</h3>
+      <p>Most flights and hotels are now locked. The remaining work is restaurant bookings and a handful of decisions on lunches and dinners. Seven v9 items closed in this round.</p>
+      <ul class="compact">
+        <li><span>Book <strong>Cascina Spinasse</strong> Sun May 31 (3 pax)</span><span class="meta">HIGH &middot; 3+ wk</span></li>
+        <li><span>Book <strong>Wild Ginger</strong> Sat May 30 6:00 pm (3 pax, OpenTable)</span><span class="meta">HIGH &middot; 1&ndash;2 wk</span></li>
+        <li><span>Decide + book <strong>Napa lunch</strong> May 22 (Cook St. Helena vs. Farmstead)</span><span class="meta">MED &middot; before May 19</span></li>
+        <li><span>Plan <strong>Sat May 23</strong> extra SF day</span><span class="meta">MED &middot; before May 19</span></li>
+        <li><span>Book <strong>Tulio</strong> Sat May 30 9:00 am brunch (3 pax, OpenTable)</span><span class="meta">MED &middot; 1&ndash;2 wk</span></li>
+        <li><span>Book <strong>Koko's</strong> Mon Jun 1 lunch (3 pax, OpenTable)</span><span class="meta">MED &middot; 1&ndash;2 wk</span></li>
+        <li><span>Update <strong>Clancy</strong> reservation guest count (1 &rarr; 3) &mdash; optional</span><span class="meta">MED &middot; before May 19</span></li>
+        <li><span>Pick + book <strong>Bozeman dinner</strong> (J.W. Heist / Blackbird / Montana Ale Works)</span><span class="meta">LOW &middot; ~1 wk prior</span></li>
+        <li><span>Request early check-in from <strong>W Seattle</strong> for Fri May 29</span><span class="meta">LOW &middot; 1 wk before</span></li>
+        <li><span>Pick <strong>Mon Jun 1 final dinner</strong> (Musang / Tomo / other)</span><span class="meta">LOW &middot; ~2 wk</span></li>
+        <li><span>Pick <strong>Sun May 31 Ballard lunch</strong> (Gracia / El Moose / Mean Sandwich)</span><span class="meta">LOW &middot; ~1 wk</span></li>
+        <li><span>Book <strong>Gracia</strong> if chosen</span><span class="meta">LOW &middot; ~1 wk prior</span></li>
+        <li><span>Book <strong>La Marcha</strong> Thu May 21 6:30 pm Berkeley (4 pax)</span><span class="meta">LOW &middot; ~1 wk prior</span></li>
+        <li><span>Pre-book <strong>Seattle Great Wheel + Aquarium</strong> timed tickets (3 pax)</span><span class="meta">LOW &middot; before May 25</span></li>
+        <li><span>Reconfirm <strong>SFO rental return</strong> &le; 09:30 Sun May 24 to make AS 3468 11:23</span><span class="meta">LOW &middot; day-of</span></li>
+        <li><span>Text <strong>82190</strong> to 888-777 for YNP road alerts (night before May 27)</span><span class="meta">LOW &middot; May 26</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="practical">
+    <div class="label">In Case</div>
+    <div class="content">
+      <h3 class="theme">Emergency notes</h3>
+      <p>Carry the operational phone book in a private file. The publicly safe items live here.</p>
+      <ul class="compact">
+        <li><span><strong>Park emergency (NPS)</strong> &mdash; life safety</span><span class="meta">911</span></li>
+        <li><span><strong>Yellowstone road alerts</strong> &mdash; subscribe by texting 82190 to 888-777 the night before May 27</span><span class="meta">SMS</span></li>
+        <li><span><strong>Bear spray</strong> &mdash; out: JAC Bear Aware Kiosk &middot; return: Central Valley Fire District, Belgrade MT</span><span class="meta">On-site</span></li>
+        <li><span><strong>SFO tight turnaround</strong> &mdash; rental return target 09:30 firm; AS 3468 departs 11:23</span><span class="meta">Sun May 24</span></li>
+        <li><span><strong>Dunraven Pass closure plan</strong> &mdash; if closed, reroute Norris &rarr; Mammoth &rarr; Tower (+45 min, +15 min Gardner Bridge)</span><span class="meta">Wed May 27</span></li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<footer class="colophon">
+  Prepared April 2026 · Master Itinerary v10
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script>
+  requestAnimationFrame(function(){ document.body.classList.add('loaded'); });
+
+  function initDayMap(containerId, stops){
+    var el = document.getElementById(containerId);
+    if(!el || typeof L === 'undefined') return;
+    var map = L.map(el, { scrollWheelZoom:false, zoomControl:true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains:'abcd',
+      maxZoom:19,
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+    var latlngs = [];
+    stops.forEach(function(s){
+      var icon = L.divIcon({ className:'map-marker-wrap', html:'<div class="map-marker">'+s.num+'</div>', iconSize:[24,24], iconAnchor:[12,12] });
+      L.marker([s.lat, s.lng], { icon:icon }).addTo(map).bindPopup(s.name+'<span class="pop-time">'+s.time+'</span>');
+      latlngs.push([s.lat, s.lng]);
+    });
+    L.polyline(latlngs, { color:'#6B2B2B', opacity:0.65, weight:2, dashArray:'4, 6' }).addTo(map);
+    map.fitBounds(L.latLngBounds(latlngs), { padding:[30,30] });
+  }
+
+  initDayMap('route-map-day6', [
+    { num:1, name:'JAC Airport',              time:'14:54', lat:43.6073, lng:-110.7376 },
+    { num:2, name:'Jackson Town Hotel',       time:'16:00', lat:43.4799, lng:-110.7624 }
+  ]);
+  initDayMap('route-map-day7', [
+    { num:1, name:'Jackson',                  time:'07:30', lat:43.4799, lng:-110.7624 },
+    { num:2, name:'T.A. Moulton Barn',        time:'08:00', lat:43.6607, lng:-110.6650 },
+    { num:3, name:'Schwabacher Landing',      time:'08:30', lat:43.7116, lng:-110.6704 },
+    { num:4, name:'Snake River Overlook',     time:'09:10', lat:43.7530, lng:-110.6244 },
+    { num:5, name:"Dornan's",                 time:'09:45', lat:43.6569, lng:-110.7113 },
+    { num:6, name:'Jenny Lake Overlook',      time:'11:15', lat:43.7678, lng:-110.7175 },
+    { num:7, name:'West Thumb Geyser Basin',  time:'14:45', lat:44.4155, lng:-110.5730 },
+    { num:8, name:'Lake Yellowstone Hotel',   time:'15:30', lat:44.5515, lng:-110.4017 }
+  ]);
+  initDayMap('route-map-day8', [
+    { num:1, name:'Lake Yellowstone Hotel',   time:'07:30', lat:44.5515, lng:-110.4017 },
+    { num:2, name:'Old Faithful',             time:'08:45', lat:44.4605, lng:-110.8281 },
+    { num:3, name:'Grand Prismatic Spring',   time:'10:30', lat:44.5250, lng:-110.8382 },
+    { num:4, name:'Canyon Lodge',             time:'13:15', lat:44.7325, lng:-110.4862 },
+    { num:5, name:'Artist Point',             time:'15:30', lat:44.7201, lng:-110.4797 },
+    { num:6, name:'Inspiration Point',        time:'15:50', lat:44.7250, lng:-110.4697 },
+    { num:7, name:'Canyon Lodge (overnight)', time:'17:00', lat:44.7325, lng:-110.4862 }
+  ]);
+  initDayMap('route-map-day9', [
+    { num:1, name:'Canyon Lodge',             time:'06:30', lat:44.7325, lng:-110.4862 },
+    { num:2, name:'Lamar Valley',             time:'07:15', lat:44.9134, lng:-110.3308 },
+    { num:3, name:'Tower Fall',               time:'10:00', lat:44.8938, lng:-110.3872 },
+    { num:4, name:'Canyon Lodge (rest)',      time:'13:00', lat:44.7325, lng:-110.4862 },
+    { num:5, name:'Hayden Valley',            time:'16:00', lat:44.6438, lng:-110.4555 },
+    { num:6, name:'Canyon Lodge (overnight)', time:'18:00', lat:44.7325, lng:-110.4862 }
+  ]);
+  initDayMap('route-map-day10', [
+    { num:1, name:'Canyon Lodge',             time:'08:30', lat:44.7325, lng:-110.4862 },
+    { num:2, name:'Mammoth Upper Terrace',    time:'09:45', lat:44.9655, lng:-110.7124 },
+    { num:3, name:'Roosevelt Arch',           time:'11:15', lat:45.0296, lng:-110.7086 },
+    { num:4, name:'Belgrade, MT',             time:'14:15', lat:45.7775, lng:-111.1770 },
+    { num:5, name:'AC Hotel Bozeman',         time:'15:00', lat:45.6805, lng:-111.0372 }
+  ]);
+  initDayMap('route-map-day11', [
+    { num:1, name:'SEA Airport',              time:'12:43', lat:47.4502, lng:-122.3088 },
+    { num:2, name:'W Seattle',                time:'14:00', lat:47.6074, lng:-122.3337 },
+    { num:3, name:'Seattle Great Wheel',      time:'14:30', lat:47.6062, lng:-122.3421 },
+    { num:4, name:'Seattle Aquarium',         time:'15:15', lat:47.6075, lng:-122.3425 },
+    { num:5, name:'SIX SEVEN (Pier 67)',      time:'18:30', lat:47.6151, lng:-122.3505 },
+    { num:6, name:'W Seattle (overnight)',    time:'21:00', lat:47.6074, lng:-122.3337 }
+  ]);
+  initDayMap('route-map-day12', [
+    { num:1, name:'W Seattle',                time:'09:00', lat:47.6074, lng:-122.3337 },
+    { num:2, name:'Pike Place Market',        time:'09:00', lat:47.6097, lng:-122.3422 },
+    { num:3, name:'Chihuly Garden and Glass', time:'11:30', lat:47.6206, lng:-122.3504 },
+    { num:4, name:'Space Needle',             time:'14:30', lat:47.6205, lng:-122.3493 },
+    { num:5, name:'MoPOP',                    time:'15:45', lat:47.6215, lng:-122.3481 },
+    { num:6, name:'Canlis',                   time:'18:30', lat:47.6459, lng:-122.3471 },
+    { num:7, name:'Kerry Park',               time:'20:15', lat:47.6295, lng:-122.3599 },
+    { num:8, name:'W Seattle (overnight)',    time:'22:00', lat:47.6074, lng:-122.3337 }
+  ]);
+  initDayMap('route-map-day13', [
+    { num:1, name:'W Seattle',                time:'08:30', lat:47.6074, lng:-122.3337 },
+    { num:2, name:'Ballard Farmers Market',   time:'09:00', lat:47.6674, lng:-122.3845 },
+    { num:3, name:'Ballard Locks',            time:'11:00', lat:47.6655, lng:-122.3972 },
+    { num:4, name:'Walrus & Carpenter',       time:'12:00', lat:47.6657, lng:-122.3842 },
+    { num:5, name:'Colman Dock',              time:'14:00', lat:47.6032, lng:-122.3391 },
+    { num:6, name:'Bainbridge Island',        time:'15:30', lat:47.6229, lng:-122.5157 },
+    { num:7, name:'Cascina Spinasse',         time:'19:30', lat:47.6153, lng:-122.3141 },
+    { num:8, name:'W Seattle (overnight)',    time:'22:00', lat:47.6074, lng:-122.3337 }
+  ]);
+  initDayMap('route-map-day14', [
+    { num:1, name:'W Seattle',                time:'09:30', lat:47.6074, lng:-122.3337 },
+    { num:2, name:'Elliott Bay Book Company', time:'11:00', lat:47.6147, lng:-122.3196 },
+    { num:3, name:'Volunteer Park',           time:'14:00', lat:47.6290, lng:-122.3146 },
+    { num:4, name:'Smith Tower',              time:'15:30', lat:47.6019, lng:-122.3318 },
+    { num:5, name:'W Seattle (check out)',    time:'21:30', lat:47.6074, lng:-122.3337 },
+    { num:6, name:'SEA Airport',              time:'22:45', lat:47.4502, lng:-122.3088 }
+  ]);
+</script>
+
+</body>
+</html>
